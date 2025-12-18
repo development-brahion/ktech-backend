@@ -11,7 +11,7 @@ import {
 
 const { JWT_SECRET_KEY, API_END_POINT_V1 } = process.env;
 
-const publicPaths = [`${API_END_POINT_V1}auth/login,`];
+const publicPaths = [`${API_END_POINT_V1}health`];
 
 const jwtMiddleware = jwt({
   secret: JWT_SECRET_KEY,

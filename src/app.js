@@ -19,7 +19,6 @@ import {
 } from "./utils/constants.js";
 import corsMiddleware from "./middlewares/corsMiddleware.js";
 import routes from "./routes/index.js";
-import * as models from "./models/index.js";
 
 const app = express();
 const { API_END_POINT_V1, SESSION_SECRET_KEY } = process.env;
