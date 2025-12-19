@@ -280,6 +280,17 @@ export function logMessage(
   }
 }
 
+export function convertToSeconds(value, unit) {
+  switch (unit) {
+    case "seconds": return value;
+    case "minutes": return value * 60;
+    case "hours":   return value * 3600;
+    case "days":    return value * 86400;
+    default:
+      throw new Error("Invalid JWT_EXP_UNIT");
+  }
+}
+
 export function getAccessTokenExpiry() {
   const value = Number(process.env.JWT_EXP_VALUE);
   const unit = process.env.JWT_EXP_UNIT;

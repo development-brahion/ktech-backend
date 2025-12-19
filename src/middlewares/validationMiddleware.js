@@ -7,7 +7,9 @@ import {
 } from "../utils/globalFunction.js";
 
 import * as CONSTANTS from "../utils/constants.js";
-import { commonValidators, moduleValidators } from "../validators/index.js";
+import validators from "../validators/index.js";
+
+const { commonValidators, moduleValidators } = validators;
 
 const parseFormDataFields = (body) => {
   const parsedBody = { ...body };
@@ -64,9 +66,9 @@ const validationMiddleware =
       const path = req._parsedUrl.pathname;
       const schemaObject = useCommon
         ? commonValidators[path] || {}
-        : moduleName
+        : role
         ? moduleValidators[moduleName][role]?.[path] || {}
-        : moduleValidators[role]?.[path] || {};
+        : moduleValidators[moduleName]?.[path] || {};
 
       const schema = Joi.object(schemaObject);
 
