@@ -8,6 +8,9 @@ const joiValidation = {
     email: emailValidation(),
     password: requiredString(4, 30),
   },
+  "/forgotpassword":{
+    email: emailValidation(),
+  }
 };
 
 export default joiValidation;

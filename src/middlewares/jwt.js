@@ -14,6 +14,7 @@ const { JWT_SECRET_KEY, API_END_POINT_V1 } = process.env;
 const publicPathsForV1 = [
   `${API_END_POINT_V1}health`,
   `${API_END_POINT_V1}auth/signIn`,
+  `${API_END_POINT_V1}auth/forgotpassword`,
 ];
 
 const publicPaths = [...publicPathsForV1];

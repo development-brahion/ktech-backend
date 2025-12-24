@@ -77,7 +77,7 @@ export const otpVerificationProcess = (data) => {
     </div>
 
     <h2>🔐 ${data.company_name} ${data.otpType} Verification Code</h2>
-    <p>Hello <strong>${data.username || 'User'}</strong>,</p>
+    <p>Hello <strong>${data.username || "User"}</strong>,</p>
     <p>Please use the following One-Time Password (OTP) to continue:</p>
     
     <div class="otp-container">
@@ -85,7 +85,9 @@ export const otpVerificationProcess = (data) => {
     </div>
     
     <p class="note">
-      This code will expire in <strong>${data.expiry_minutes} minutes</strong>.<br>
+      This code will expire in <strong>${
+        data.expiry_minutes
+      } minutes</strong>.<br>
       For your security, do not share it with anyone.
     </p>
     
@@ -96,5 +98,119 @@ export const otpVerificationProcess = (data) => {
 </body>
 </html>
 
+`;
+};
+
+export const resetPasswordProcess = (data) => {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <title>Password Reset</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .logo {
+      margin-bottom: 20px;
+    }
+    .logo img {
+      max-height: 60px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #1a202c;
+    }
+    p {
+      font-size: 16px;
+      color: #4a5568;
+      margin: 12px 0;
+      line-height: 1.6;
+    }
+    .button-container {
+      margin: 35px 0;
+    }
+    .reset-button {
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      color: #ffffff !important;
+      text-decoration: none;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 6px 16px rgba(79,70,229,0.25);
+    }
+    .note {
+      font-size: 14px;
+      color: #718096;
+      margin-top: 25px;
+      line-height: 1.5;
+    }
+    .footer {
+      font-size: 13px;
+      color: #a0aec0;
+      margin-top: 40px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Logo -->
+    <div class="logo">
+      <img src="${data.company_logo_url}" alt="${data.company_name} Logo">
+    </div>
+
+    <h2>🔑 ${data.company_name} Password Reset</h2>
+
+    <p>Hello <strong>${data.username || "User"}</strong>,</p>
+
+    <p>
+      We received a request to reset your password.  
+      Click the button below to securely create a new password.
+    </p>
+
+    <div class="button-container">
+      <a
+        href="${data.resetLink}"
+        class="reset-button"
+        target="_blank"
+      >
+        Reset Password
+      </a>
+    </div>
+
+    <p class="note">
+      This link will expire in <strong>${
+        data.expiry || "15 minutes"
+      }</strong> for your security.<br>
+      If you did not request a password reset, you can safely ignore this email.
+    </p>
+
+    <div class="footer">
+      © ${new Date().getFullYear()} ${data.company_name}. All rights reserved.
+    </div>
+
+  </div>
+</body>
+</html>
 `;
 };

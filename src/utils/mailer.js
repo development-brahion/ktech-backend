@@ -40,3 +40,22 @@ export const otpVerificationProcessTemplate = async (email, data) => {
     return { success: false, error: error.message };
   }
 };
+
+export const resetPasswordLinkProcessTemplate = async (email, data) => {
+  try {
+    await transporter.sendMail({
+      from: SMTP_EMAIL,
+      to: email,
+      subject: `[${APPLICATION_NAME}] Reset Password - ${new Date()}`,
+      html: htmlTemplate.resetPasswordProcess({
+        ...data,
+        company_name: APPLICATION_NAME,
+        company_logo_url: APPLICATION_LOGO_URL,
+      }),
+    });
+    return { success: true };
+  } catch (error) {
+    logMessage("Email error:", error, "error");
+    return { success: false, error: error.message };
+  }
+};

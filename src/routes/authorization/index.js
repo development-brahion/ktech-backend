@@ -10,4 +10,10 @@ router.post(
   controllers.authorizationController.signIn
 );
 
+router.post(
+  "/forgotpassword",
+  validationMiddleware("authorization"),
+  controllers.authorizationController.forgotPassword
+);
+
 export default router;

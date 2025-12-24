@@ -282,10 +282,14 @@ export function logMessage(
 
 export function convertToSeconds(value, unit) {
   switch (unit) {
-    case "seconds": return value;
-    case "minutes": return value * 60;
-    case "hours":   return value * 3600;
-    case "days":    return value * 86400;
+    case "seconds":
+      return value;
+    case "minutes":
+      return value * 60;
+    case "hours":
+      return value * 3600;
+    case "days":
+      return value * 86400;
     default:
       throw new Error("Invalid JWT_EXP_UNIT");
   }
@@ -306,7 +310,32 @@ export function getRefreshTokenExpiry() {
   return Math.floor(accessSec * multiplier);
 }
 
-
 const generateReferralCode = () => {
-  return crypto.randomBytes(6).toString('hex');
+  return crypto.randomBytes(6).toString("hex");
 };
+
+export async function hashAndEncryptPassword(password) {
+  if (!password) {
+    throw new Error("Password is required");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 8);
+
+  const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+  if (ENCRYPTION_KEY.length !== 32) {
+    throw new Error("ENCRYPTION_KEY must be 32 bytes (64 hex chars)");
+  }
+
+  const IV = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", ENCRYPTION_KEY, IV);
+
+  let encrypted = cipher.update(password, "utf8", "hex");
+  encrypted += cipher.final("hex");
+
+  const encryptedPassword = `${IV.toString("hex")}:${encrypted}`;
+
+  return {
+    hashedPassword,
+    encryptedPassword,
+  };
+}
