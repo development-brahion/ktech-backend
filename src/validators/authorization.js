@@ -21,7 +21,7 @@ const joiValidation = {
     confirmPassword: confirmPasswordValidation(8, 30),
   },
   "/change-password": passwordChangeSchema(),
-  "update-profile-photo": {
+  "/update-profile-photo": {
     profilephoto: fileObjectJoiSchema(),
   },
 };
