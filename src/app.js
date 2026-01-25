@@ -3,6 +3,7 @@ import express from "express";
 import session from "express-session";
 import morgan from "morgan";
 import path from "path";
+import cors from "cors";
 
 import errorHandler from "./middlewares/errorHandler.js";
 import maintenance from "./middlewares/maintenance.js";
@@ -18,13 +19,17 @@ import {
   DATA_NULL,
   NOT_FOUND,
 } from "./utils/constants.js";
-import corsMiddleware from "./middlewares/corsMiddleware.js";
 import routes from "./routes/index.js";
 
 const app = express();
 const { API_END_POINT_V1, SESSION_SECRET_KEY } = process.env;
 
-app.use(corsMiddleware());
+app.use(
+  cors({
+    origin: true, // allow all origins
+    credentials: false, // MUST be false when allowing all
+  }),
+);
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ extended: BOOLEAN_TRUE, limit: "200mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
@@ -34,7 +39,7 @@ app.use(
     secret: SESSION_SECRET_KEY,
     resave: BOOLEAN_FALSE,
     saveUninitialized: BOOLEAN_TRUE,
-  })
+  }),
 );
 
 app.use(maintenance);
