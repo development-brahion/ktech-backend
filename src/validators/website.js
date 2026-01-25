@@ -1,6 +1,8 @@
 import {
   fileObjectJoiSchema,
+  objectIdValidation,
   requiredArrayWithMinimumLength,
+  requiredBoolean,
   requiredObject,
   requiredString,
   urlValidation,
@@ -38,6 +40,19 @@ const joiValidation = {
     blogs: {
       heading: requiredString(1, Number.MAX_SAFE_INTEGER),
       subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+  },
+  languages: {
+    "/create": {
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
     },
   },
 };
