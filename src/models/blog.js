@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-
+import mongoose from "mongoose"
+import {FileDbSchema} from "./fileDb.js";
 const { Schema } = mongoose;
 
 const blogSchema = new Schema(
@@ -16,12 +16,8 @@ const blogSchema = new Schema(
       type: String,
       required: true,
     },
-    thumbnailImageUrl: {
-      type: String,
-    },
-    mainImageUrl: {
-      type: String,
-    },
+    thumbnailImage:FileDbSchema, 
+    mainImageUrl: FileDbSchema,
     language: [
       {
         type: mongoose.Types.ObjectId,
@@ -37,6 +33,10 @@ const blogSchema = new Schema(
     status: {
       type: Boolean,
       default: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

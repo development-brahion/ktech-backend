@@ -68,6 +68,43 @@ const joiValidation = {
       status: requiredBoolean(),
     },
   },
+  blogs: {
+    "/create": {
+      title: requiredString(1, Number.MAX_SAFE_INTEGER),
+      shortDescription: requiredString(1, Number.MAX_SAFE_INTEGER),
+      description: requiredString(1, Number.MAX_SAFE_INTEGER),
+      thumbnailImage: fileObjectJoiSchema(),
+      mainImageUrl: fileObjectJoiSchema(),
+      language: requiredArrayWithMinimumLength(
+        objectIdValidation("language id"),
+        1,
+      ),
+      category: requiredArrayWithMinimumLength(
+        objectIdValidation("category id"),
+        1,
+      ),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      title: requiredString(1, Number.MAX_SAFE_INTEGER),
+      shortDescription: requiredString(1, Number.MAX_SAFE_INTEGER),
+      description: requiredString(1, Number.MAX_SAFE_INTEGER),
+      thumbnailImage: fileObjectJoiSchema(),
+      mainImageUrl: fileObjectJoiSchema(),
+      language: requiredArrayWithMinimumLength(
+        objectIdValidation("language id"),
+        1,
+      ),
+      category: requiredArrayWithMinimumLength(
+        objectIdValidation("category id"),
+        1,
+      ),
+    },
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+  },
 };
 
 export default joiValidation;
