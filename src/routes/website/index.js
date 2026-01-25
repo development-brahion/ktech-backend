@@ -2,6 +2,7 @@ import { Router } from "express";
 import controllers from "../../controller/index.js";
 import { validationMiddleware } from "../../middlewares/validationMiddleware.js";
 import languageRoutes from "./languages.js";
+import categoryRoutes from "./category.js";
 const router = Router();
 
 router.get(
@@ -17,5 +18,6 @@ router.post(
 );
 
 router.use("/languages", languageRoutes);
+router.use("/category", categoryRoutes);
 
 export default router;

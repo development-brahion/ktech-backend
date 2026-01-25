@@ -7,7 +7,10 @@ import {
 } from "../../utils/globalFunction.js";
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
-import { findOneByQuery } from "../../services/serviceGlobal.js";
+import {
+  findOneByQuery,
+  findOneByQueryLeanWithSelect,
+} from "../../services/serviceGlobal.js";
 import { User } from "../../models/index.js";
 import { signToken } from "../../utils/jwtTokenUtils.js";
 import { resetPasswordLinkProcessTemplate } from "../../utils/mailer.js";
@@ -228,6 +231,114 @@ export const resetPassword = async (req, res) => {
     );
   } catch (error) {
     logMessage("Error in resetPassword controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const viewProfile = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { statusCode, data } = await findOneByQueryLeanWithSelect(
+      User,
+      {
+        _id: id,
+      },
+      "name status email phoneNo address role dateOfBirth dateOfJoining profilephoto _id",
+    );
+
+    if (statusCode === CONSTANTS.OK) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_OK,
+        CONSTANTS_MSG.SUCCESS_MSG,
+        data,
+        CONSTANTS.OK,
+      );
+    } else {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_BAD_REQUEST,
+        CONSTANTS_MSG.FAILED_MSG,
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.BAD_REQUEST,
+      );
+    }
+  } catch (error) {
+    logMessage("Error in viewProfile controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await User.findOne({
+      _id: id,
+    });
+
+    if (!user) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "User not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    const isPasswordMatch = await verifyPassword(
+      user.password,
+      currentPassword,
+    );
+
+    if (!isPasswordMatch) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_UNAUTHORIZED,
+        "Invalid current password.",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.UNAUTHORIZED,
+      );
+    }
+
+    const { hashedPassword, encryptedPassword } =
+      await hashAndEncryptPassword(newPassword);
+
+    user.password = hashedPassword;
+    user.originalPassword = encryptedPassword;
+
+    await user.save();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Password updated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in changePassword controller", error, "error");
     return apiHTTPResponse(
       req,
       res,

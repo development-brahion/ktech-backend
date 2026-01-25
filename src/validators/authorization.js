@@ -1,6 +1,7 @@
 import {
   confirmPasswordValidation,
   emailValidation,
+  passwordChangeSchema,
   passwordValidation,
   requiredString,
 } from "../utils/joiValidationDataType.js";
@@ -18,6 +19,7 @@ const joiValidation = {
     password: passwordValidation(8, 30),
     confirmPassword: confirmPasswordValidation(8, 30),
   },
+  "/change-password": passwordChangeSchema(),
 };
 
 export default joiValidation;
