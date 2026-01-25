@@ -34,4 +34,10 @@ router.post(
   controllers.authorizationController.changePassword,
 );
 
+router.post(
+  "/update-profile-photo",
+  validationMiddleware("authorization"),
+  controllers.authorizationController.updateProfilePhoto,
+);
+
 export default router;
