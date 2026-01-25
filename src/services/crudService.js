@@ -326,8 +326,9 @@ const globalCrudService = {
       }
     },
 
-  getList: (model) => async (req, res) => {
+  getList: (model, isDeletedApplicable) => async (req, res) => {
     try {
+      console.log("isDeletedApplicable", isDeletedApplicable);
       const options = {
         pageNo: parseInt(req.body.page) || 1,
         size: parseInt(req.body.size) || 10,
@@ -345,7 +346,11 @@ const globalCrudService = {
         populate: buildPopulateFields(req.body.populate),
       };
 
-      const result = await getListDocuments(model, options);
+      const result = await getListDocuments(
+        model,
+        options,
+        isDeletedApplicable,
+      );
       return result.statusCode === CONSTANTS.OK
         ? handleSuccess(req, res, CONSTANTS_MSG.SUCCESS_MSG, result.data)
         : handleFailure(req, res);
