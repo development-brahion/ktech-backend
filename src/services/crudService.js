@@ -24,7 +24,7 @@ const handleSuccess = (req, res, message, data = CONSTANTS.DATA_NULL) =>
     message,
     data,
     CONSTANTS.OK,
-    CONSTANTS.ERROR_FALSE
+    CONSTANTS.ERROR_FALSE,
   );
 
 const handleFailure = (
@@ -32,7 +32,7 @@ const handleFailure = (
   res,
   code = CONSTANTS.HTTP_BAD_REQUEST,
   message = CONSTANTS_MSG.FAILED_MSG,
-  errorCode = CONSTANTS.BAD_REQUEST
+  errorCode = CONSTANTS.BAD_REQUEST,
 ) =>
   apiHTTPResponse(
     req,
@@ -41,14 +41,14 @@ const handleFailure = (
     message,
     CONSTANTS.DATA_NULL,
     errorCode,
-    CONSTANTS.ERROR_TRUE
+    CONSTANTS.ERROR_TRUE,
   );
 
 const handleError = (req, res, error, tag, service = "GlobalCrudService") => {
   console.error(
     `[${service}] Controller Error (${tag}):`,
     error?.message || error,
-    error?.stack
+    error?.stack,
   );
   return apiHTTPResponse(
     req,
@@ -57,7 +57,7 @@ const handleError = (req, res, error, tag, service = "GlobalCrudService") => {
     CONSTANTS_MSG.SERVER_ERROR,
     CONSTANTS.DATA_NULL,
     CONSTANTS.INTERNAL_SERVER_ERROR,
-    CONSTANTS.ERROR_TRUE
+    CONSTANTS.ERROR_TRUE,
   );
 };
 
@@ -67,7 +67,7 @@ const globalCrudService = {
       model,
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
-      isReturnId = false
+      isReturnId = false,
     ) =>
     async (req, res) => {
       try {
@@ -77,7 +77,7 @@ const globalCrudService = {
               req,
               res,
               rawMessage ? message : CONSTANTS_MSG[message],
-              isReturnId ? { _id: result.data._id } : CONSTANTS.DATA_NULL
+              isReturnId ? { _id: result.data._id } : CONSTANTS.DATA_NULL,
             )
           : handleFailure(req, res);
       } catch (error) {
@@ -90,7 +90,7 @@ const globalCrudService = {
       model,
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
-      isReturnId = false
+      isReturnId = false,
     ) =>
     async (req, res) => {
       try {
@@ -99,21 +99,21 @@ const globalCrudService = {
           model,
           _id,
           { ...rest, updatedAt: Date.now() },
-          CONSTANTS.BOOLEAN_TRUE
+          CONSTANTS.BOOLEAN_TRUE,
         );
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(
             req,
             res,
             rawMessage ? message : CONSTANTS_MSG[message],
-            isReturnId ? { _id: result.data._id } : CONSTANTS.DATA_NULL
+            isReturnId ? { _id: result.data._id } : CONSTANTS.DATA_NULL,
           );
         if (result.statusCode === CONSTANTS.NOT_FOUND)
           return handleFailure(
             req,
             res,
             CONSTANTS.HTTP_NOT_FOUND,
-            CONSTANTS_MSG.DATA_NOT_FOUND
+            CONSTANTS_MSG.DATA_NOT_FOUND,
           );
         return handleFailure(req, res);
       } catch (error) {
@@ -127,7 +127,7 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       extraQuery = {},
-      extraBody = {}
+      extraBody = {},
     ) =>
     async (req, res) => {
       try {
@@ -142,21 +142,21 @@ const globalCrudService = {
             isDeleted: CONSTANTS.BOOLEAN_TRUE,
             updatedAt: Date.now(),
             ...extraBody,
-          }
+          },
         );
 
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(
             req,
             res,
-            rawMessage ? message : CONSTANTS_MSG[message]
+            rawMessage ? message : CONSTANTS_MSG[message],
           );
         if (result.statusCode === CONSTANTS.NOT_FOUND)
           return handleFailure(
             req,
             res,
             CONSTANTS.HTTP_NOT_FOUND,
-            CONSTANTS_MSG.DATA_NOT_FOUND
+            CONSTANTS_MSG.DATA_NOT_FOUND,
           );
         return handleFailure(req, res);
       } catch (error) {
@@ -170,7 +170,7 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       extraQuery = {},
-      extraBody = {}
+      extraBody = {},
     ) =>
     async (req, res) => {
       try {
@@ -185,21 +185,21 @@ const globalCrudService = {
             isDeleted: CONSTANTS.BOOLEAN_TRUE,
             updatedAt: Date.now(),
             ...extraBody,
-          }
+          },
         );
 
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(
             req,
             res,
-            rawMessage ? message : CONSTANTS_MSG[message]
+            rawMessage ? message : CONSTANTS_MSG[message],
           );
         if (result.statusCode === CONSTANTS.NOT_FOUND)
           return handleFailure(
             req,
             res,
             CONSTANTS.HTTP_NOT_FOUND,
-            CONSTANTS_MSG.DATA_NOT_FOUND
+            CONSTANTS_MSG.DATA_NOT_FOUND,
           );
         return handleFailure(req, res);
       } catch (error) {
@@ -214,11 +214,14 @@ const globalCrudService = {
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       entity = "Entity",
       extraQuery = {},
-      extraBody = {}
+      extraBody = {},
+      accessKey = "isDisable",
     ) =>
     async (req, res) => {
       try {
-        const { _id, isDisable } = req.body;
+        const { _id } = req.body;
+
+        const value = req.body[accessKey];
 
         const { statusCode, data } = await findOneByQuery(model, {
           _id,
@@ -231,31 +234,35 @@ const globalCrudService = {
             req,
             res,
             CONSTANTS.HTTP_NOT_FOUND,
-            CONSTANTS_MSG.DATA_NOT_FOUND
+            CONSTANTS_MSG.DATA_NOT_FOUND,
           );
         }
 
-        if (data.isDisable === isDisable) {
+        if (data[accessKey] === value) {
           return handleFailure(
             req,
             res,
             CONSTANTS.HTTP_CONFLICT,
             `${entity} is already in the same state.`,
-            CONSTANTS.CONFLICT
+            CONSTANTS.CONFLICT,
           );
         }
 
         const result = await updateDocumentByQueryAndData(
           model,
           { _id, isDeleted: CONSTANTS.BOOLEAN_FALSE },
-          { isDisable, updatedAt: Date.now(), ...extraBody }
+          {
+            [accessKey]: value,
+            updatedAt: Date.now(),
+            ...extraBody,
+          },
         );
 
         if (result.statusCode === CONSTANTS.OK) {
           return handleSuccess(
             req,
             res,
-            rawMessage ? message : CONSTANTS_MSG[message]
+            rawMessage ? message : CONSTANTS_MSG[message],
           );
         }
 
@@ -263,7 +270,7 @@ const globalCrudService = {
           req,
           res,
           CONSTANTS.HTTP_BAD_REQUEST,
-          CONSTANTS_MSG.SOMETHING_WENT_WRONG
+          CONSTANTS_MSG.SOMETHING_WENT_WRONG,
         );
       } catch (error) {
         return handleError(req, res, error, `${model} - enableDisable`);
@@ -276,11 +283,14 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       extraQuery = {},
-      extraBody = {}
+      extraBody = {},
+      accessKey = "isDisable",
     ) =>
     async (req, res) => {
       try {
-        const { _id, isDisable } = req.body;
+        const { _id } = req.body;
+        const value = req.body[accessKey];
+
         const result = await updateMultipleDocumentByQueryAndData(
           model,
           {
@@ -288,22 +298,28 @@ const globalCrudService = {
             isDeleted: CONSTANTS.BOOLEAN_FALSE,
             ...extraQuery,
           },
-          { isDisable, updatedAt: Date.now(), ...extraBody }
+          {
+            [accessKey]: value,
+            updatedAt: Date.now(),
+            ...extraBody,
+          },
         );
 
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(
             req,
             res,
-            rawMessage ? message : CONSTANTS_MSG[message]
+            rawMessage ? message : CONSTANTS_MSG[message],
           );
+
         if (result.statusCode === CONSTANTS.NOT_FOUND)
           return handleFailure(
             req,
             res,
             CONSTANTS.HTTP_NOT_FOUND,
-            CONSTANTS_MSG.DATA_NOT_FOUND
+            CONSTANTS_MSG.DATA_NOT_FOUND,
           );
+
         return handleFailure(req, res);
       } catch (error) {
         return handleError(req, res, error, `${model} - enableDisableMultiple`);
@@ -338,31 +354,33 @@ const globalCrudService = {
     }
   },
 
-  getALLDocuments: (model) => async (req, res) => {
-    try {
-      const options = {
-        sortBy: req.body.sortBy || "createdAt",
-        sortOrder: req.body.sortOrder || "desc",
-        keyWord: req.body.keyWord || "",
-        searchFields: req.body.searchFields || "",
-        query:
-          req.body.query && typeof req.body.query === "string"
-            ? JSON.parse(req.body.query)
-            : req.body.query || {},
-        select: req.body.select || "",
-        fromDate: req.body.fromDate || "",
-        toDate: req.body.toDate || "",
-        populate: buildPopulateFields(req.body.populate),
-      };
+  getALLDocuments:
+    (model, builtIn = true) =>
+    async (req, res) => {
+      try {
+        const options = {
+          sortBy: req.body.sortBy || "createdAt",
+          sortOrder: req.body.sortOrder || "desc",
+          keyWord: req.body.keyWord || "",
+          searchFields: req.body.searchFields || "",
+          query:
+            req.body.query && typeof req.body.query === "string"
+              ? JSON.parse(req.body.query)
+              : req.body.query || {},
+          select: req.body.select || "",
+          fromDate: req.body.fromDate || "",
+          toDate: req.body.toDate || "",
+          populate: buildPopulateFields(req.body.populate),
+        };
 
-      const result = await getAllDocuments(model, options);
-      return result.statusCode === CONSTANTS.OK
-        ? handleSuccess(req, res, CONSTANTS_MSG.SUCCESS_MSG, result.data)
-        : handleFailure(req, res);
-    } catch (error) {
-      return handleError(req, res, error, `${model} - getALLDocuments`);
-    }
-  },
+        const result = await getAllDocuments(model, options, builtIn);
+        return result.statusCode === CONSTANTS.OK
+          ? handleSuccess(req, res, CONSTANTS_MSG.SUCCESS_MSG, result.data)
+          : handleFailure(req, res);
+      } catch (error) {
+        return handleError(req, res, error, `${model} - getALLDocuments`);
+      }
+    },
 
   executeAggregation:
     (model, pipeline, isSingle = CONSTANTS.BOOLEAN_FALSE) =>
@@ -375,7 +393,7 @@ const globalCrudService = {
               req,
               res,
               CONSTANTS_MSG.SUCCESS_MSG,
-              isSingle ? result.data[0] || {} : result.data
+              isSingle ? result.data[0] || {} : result.data,
             )
           : handleFailure(req, res);
       } catch (error) {
@@ -401,7 +419,7 @@ const globalCrudService = {
           return handleSuccess(
             req,
             res,
-            rawMessage ? message : CONSTANTS_MSG[message]
+            rawMessage ? message : CONSTANTS_MSG[message],
           );
         }
 
@@ -409,7 +427,7 @@ const globalCrudService = {
           req,
           res,
           CONSTANTS.HTTP_NOT_FOUND,
-          CONSTANTS_MSG.DATA_NOT_FOUND
+          CONSTANTS_MSG.DATA_NOT_FOUND,
         );
       } catch (error) {
         return handleError(req, res, error, `${model} - changePassword`);
@@ -425,7 +443,7 @@ const globalCrudService = {
           model,
           { _id, isDeleted: CONSTANTS.BOOLEAN_FALSE, ...data },
           select,
-          buildPopulateFields(populate)
+          buildPopulateFields(populate),
         );
 
         return result.statusCode === CONSTANTS.OK
@@ -433,13 +451,13 @@ const globalCrudService = {
               req,
               res,
               rawMessage ? message : CONSTANTS_MSG[message],
-              result.data
+              result.data,
             )
           : handleFailure(
               req,
               res,
               CONSTANTS.HTTP_NOT_FOUND,
-              CONSTANTS_MSG.DATA_NOT_FOUND
+              CONSTANTS_MSG.DATA_NOT_FOUND,
             );
       } catch (error) {
         return handleError(req, res, error, `${model} - getById`);
@@ -457,7 +475,7 @@ const globalCrudService = {
             req,
             res,
             rawMessage ? message : CONSTANTS_MSG[message],
-            result.data
+            result.data,
           );
         } else {
           return handleFailure(req, res);
