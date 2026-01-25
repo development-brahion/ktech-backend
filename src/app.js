@@ -27,17 +27,10 @@ const { API_END_POINT_V1 } = process.env;
 /* =======================
    CORS – allow all (TEMP)
 ======================= */
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+
 
 // handle preflight
-app.options("*", cors());
-
+app.use(cors({ origin: "*" }));
 /* =======================
    Body parsers
 ======================= */
