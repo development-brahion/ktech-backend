@@ -15,7 +15,7 @@ const languageMessages = {
 
 export const list = async (req, res) => {
   try {
-    return crudService.getList(Language)(req, res);
+    return crudService.getList(Language,CONSTANTS.BOOLEAN_TRUE)(req, res);
   } catch (error) {
     logMessage("Error in list languages", error, "error");
     return apiHTTPResponse(
