@@ -319,11 +319,16 @@ export async function hashAndEncryptPassword(password) {
     throw new Error("Password is required");
   }
 
+  if (!process.env.ENCRYPTION_KEY) {
+    throw new Error("ENCRYPTION_KEY is missing");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 8);
 
   const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+
   if (ENCRYPTION_KEY.length !== 32) {
-    throw new Error("ENCRYPTION_KEY must be 32 bytes (64 hex chars)");
+    throw new Error("ENCRYPTION_KEY must be 32 bytes (64 hex characters)");
   }
 
   const IV = crypto.randomBytes(16);
@@ -332,10 +337,9 @@ export async function hashAndEncryptPassword(password) {
   let encrypted = cipher.update(password, "utf8", "hex");
   encrypted += cipher.final("hex");
 
-  const encryptedPassword = `${IV.toString("hex")}:${encrypted}`;
-
   return {
     hashedPassword,
-    encryptedPassword,
+    encryptedPassword: `${IV.toString("hex")}:${encrypted}`,
   };
 }
+

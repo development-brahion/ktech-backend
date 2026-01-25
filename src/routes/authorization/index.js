@@ -16,4 +16,10 @@ router.post(
   controllers.authorizationController.forgotPassword
 );
 
+router.post(
+  "/resetpassword",
+  validationMiddleware("authorization"),
+  controllers.authorizationController.resetPassword
+);
+
 export default router;

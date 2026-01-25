@@ -15,6 +15,7 @@ const publicPathsForV1 = [
   `${API_END_POINT_V1}health`,
   `${API_END_POINT_V1}auth/signIn`,
   `${API_END_POINT_V1}auth/forgotpassword`,
+  `${API_END_POINT_V1}auth/resetpassword`,
 ];
 
 const publicPaths = [...publicPathsForV1];

@@ -1,5 +1,6 @@
 import {
   apiHTTPResponse,
+  hashAndEncryptPassword,
   isProduction,
   logMessage,
   verifyPassword,
@@ -10,6 +11,7 @@ import { findOneByQuery } from "../../services/serviceGlobal.js";
 import { User } from "../../models/index.js";
 import { signToken } from "../../utils/jwtTokenUtils.js";
 import { resetPasswordLinkProcessTemplate } from "../../utils/mailer.js";
+import jwt from "jsonwebtoken";
 
 export const signIn = async (req, res) => {
   try {
@@ -30,7 +32,7 @@ export const signIn = async (req, res) => {
           CONSTANTS.HTTP_BAD_REQUEST,
           CONSTANTS_MSG.INVALID_PASSWORD,
           CONSTANTS.DATA_NULL,
-          CONSTANTS.BAD_REQUEST
+          CONSTANTS.BAD_REQUEST,
         );
       }
 
@@ -53,7 +55,7 @@ export const signIn = async (req, res) => {
           ...payloadData,
         },
         CONSTANTS.OK,
-        CONSTANTS.ERROR_FALSE
+        CONSTANTS.ERROR_FALSE,
       );
     } else if (statusCode === CONSTANTS.NOT_FOUND) {
       return apiHTTPResponse(
@@ -62,7 +64,7 @@ export const signIn = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         CONSTANTS_MSG.INVALID_EMAIL,
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND
+        CONSTANTS.NOT_FOUND,
       );
     } else {
       return apiHTTPResponse(
@@ -71,7 +73,7 @@ export const signIn = async (req, res) => {
         CONSTANTS.HTTP_BAD_REQUEST,
         CONSTANTS_MSG.FAILED_MSG,
         CONSTANTS.DATA_NULL,
-        CONSTANTS.BAD_REQUEST
+        CONSTANTS.BAD_REQUEST,
       );
     }
   } catch (error) {
@@ -82,7 +84,7 @@ export const signIn = async (req, res) => {
       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
       CONSTANTS_MSG.SERVER_ERROR,
       CONSTANTS.DATA_NULL,
-      CONSTANTS.INTERNAL_SERVER_ERROR
+      CONSTANTS.INTERNAL_SERVER_ERROR,
     );
   }
 };
@@ -102,7 +104,7 @@ export const forgotPassword = async (req, res) => {
         email: data.email,
       };
 
-      const token = signToken(payloadData, 15000);
+      const token = signToken(payloadData, "15m");
 
       const resetLink = `${process.env.NEXT_AUTH_URL}/updatePassword?token=${token}`;
 
@@ -119,7 +121,7 @@ export const forgotPassword = async (req, res) => {
             CONSTANTS.HTTP_OK,
             "A password reset link has been sent to your email. Please check your inbox or spam folder.",
             CONSTANTS.DATA_NULL,
-            CONSTANTS.OK
+            CONSTANTS.OK,
           );
         } else {
           return apiHTTPResponse(
@@ -128,7 +130,7 @@ export const forgotPassword = async (req, res) => {
             CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
             CONSTANTS_MSG.SERVER_ERROR,
             CONSTANTS.DATA_NULL,
-            CONSTANTS.INTERNAL_SERVER_ERROR
+            CONSTANTS.INTERNAL_SERVER_ERROR,
           );
         }
       } else {
@@ -138,7 +140,7 @@ export const forgotPassword = async (req, res) => {
           CONSTANTS.HTTP_OK,
           "A password reset link has been sent to your email. Please check your inbox or spam folder.",
           { resetLink },
-          CONSTANTS.OK
+          CONSTANTS.OK,
         );
       }
     } else if (statusCode === CONSTANTS.NOT_FOUND) {
@@ -148,7 +150,7 @@ export const forgotPassword = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         CONSTANTS_MSG.INVALID_EMAIL,
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND
+        CONSTANTS.NOT_FOUND,
       );
     } else {
       return apiHTTPResponse(
@@ -157,7 +159,7 @@ export const forgotPassword = async (req, res) => {
         CONSTANTS.HTTP_BAD_REQUEST,
         CONSTANTS_MSG.FAILED_MSG,
         CONSTANTS.DATA_NULL,
-        CONSTANTS.BAD_REQUEST
+        CONSTANTS.BAD_REQUEST,
       );
     }
   } catch (error) {
@@ -168,7 +170,71 @@ export const forgotPassword = async (req, res) => {
       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
       CONSTANTS_MSG.SERVER_ERROR,
       CONSTANTS.DATA_NULL,
-      CONSTANTS.INTERNAL_SERVER_ERROR
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    } catch (err) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_UNAUTHORIZED,
+        "Invalid or expired token",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.UNAUTHORIZED,
+      );
+    }
+
+    const user = await User.findOne({
+      _id: decoded.userId,
+      email: decoded.email,
+      status: true,
+    });
+
+    if (!user) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "User not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    const { hashedPassword, encryptedPassword } =
+      await hashAndEncryptPassword(password);
+
+    user.password = hashedPassword;
+    user.originalPassword = encryptedPassword;
+
+    await user.save();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Password updated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in resetPassword controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
     );
   }
 };
