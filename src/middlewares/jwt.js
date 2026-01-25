@@ -18,7 +18,7 @@ const publicPathsForV1 = [
   `${API_END_POINT_V1}auth/resetpassword`,
 ];
 
-const publicPaths = [...publicPathsForV1];
+const publicPaths = [...publicPathsForV1, /^\/uploads(\/.*)?$/];
 
 const jwtMiddleware = jwt({
   secret: JWT_SECRET_KEY,
@@ -44,7 +44,7 @@ export default () => {
             "Session expired. Please log in again.",
             DATA_NULL,
             "TOKEN_EXPIRED",
-            ERROR_TRUE
+            ERROR_TRUE,
           );
         }
 
@@ -56,7 +56,7 @@ export default () => {
             "Access denied. Please log in to continue.",
             DATA_NULL,
             UNAUTHORIZED,
-            ERROR_TRUE
+            ERROR_TRUE,
           );
         }
 
@@ -67,7 +67,7 @@ export default () => {
           "Service temporarily unavailable. Please try again later.",
           DATA_NULL,
           SERVICE_UNAVAILABLE,
-          ERROR_TRUE
+          ERROR_TRUE,
         );
       }
 
