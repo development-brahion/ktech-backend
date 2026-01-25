@@ -5,7 +5,6 @@ import {
   requiredBoolean,
   dateSchema,
   objectIdValidation,
-  requiredEnum,
 } from "../utils/joiValidationDataType.js";
 
 const joiValidation = {
@@ -56,9 +55,8 @@ const joiValidation = {
     populate: optionalString(0, Number.MAX_SAFE_INTEGER),
   },
   "/upload": {
-    module: requiredEnum(["CHATS"]),
+    module: optionalEnum(["default", "admin"]),
   },
 };
-
 
 export default joiValidation;

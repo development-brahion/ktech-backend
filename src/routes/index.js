@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authorizationRoutes from "./authorization/index.js";
+import filesRoutes from "./files/index.js";
 
 const router = Router();
 
@@ -8,5 +9,6 @@ router.get("/health", (req, res) =>
 );
 
 router.use("/auth", authorizationRoutes);
+router.use("/files", filesRoutes);
 
 export default router;

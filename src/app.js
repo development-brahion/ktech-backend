@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import session from "express-session";
 import morgan from "morgan";
+import path from "path";
 
 import errorHandler from "./middlewares/errorHandler.js";
 import maintenance from "./middlewares/maintenance.js";
@@ -26,6 +27,7 @@ const { API_END_POINT_V1, SESSION_SECRET_KEY } = process.env;
 app.use(corsMiddleware());
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ extended: BOOLEAN_TRUE, limit: "200mb" }));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use(morgan("dev"));
 app.use(
   session({
