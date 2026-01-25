@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { FileDbSchema } from "./fileDb.js";
 
 const { Schema } = mongoose;
 
@@ -68,11 +69,7 @@ const userSchema = new Schema(
       default: 0,
     },
     profilephoto: [
-      {
-        path: {
-          type: String,
-        },
-      },
+      FileDbSchema
     ],
     Roleid: [
       {

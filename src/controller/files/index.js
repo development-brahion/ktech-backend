@@ -23,8 +23,16 @@ export const multipleFilesUploader = async (req, res) => {
 
     const safeFolder = folderName.replace(/[^a-zA-Z0-9-_]/g, "");
 
-    const baseUploadDir = path.join(process.cwd(), "uploads");
+    const baseUploadDir =
+      process.env.NODE_ENV === "production"
+        ? path.join("/tmp", "uploads")
+        : path.join(process.cwd(), "uploads");
+
     const targetDir = path.join(baseUploadDir, safeFolder);
+
+    if (!fs.existsSync(baseUploadDir)) {
+      fs.mkdirSync(baseUploadDir, { recursive: true });
+    }
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
