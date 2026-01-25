@@ -1,6 +1,7 @@
 import {
   confirmPasswordValidation,
   emailValidation,
+  fileObjectJoiSchema,
   passwordChangeSchema,
   passwordValidation,
   requiredString,
