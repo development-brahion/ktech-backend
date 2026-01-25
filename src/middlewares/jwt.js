@@ -16,6 +16,7 @@ const publicPathsForV1 = [
   `${API_END_POINT_V1}auth/signIn`,
   `${API_END_POINT_V1}auth/forgotpassword`,
   `${API_END_POINT_V1}auth/resetpassword`,
+  `${API_END_POINT_V1}/website/home`,
 ];
 
 const publicPaths = [...publicPathsForV1, /^\/uploads(\/.*)?$/];
