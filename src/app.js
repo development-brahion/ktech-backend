@@ -26,10 +26,10 @@ const { API_END_POINT_V1, SESSION_SECRET_KEY } = process.env;
 
 app.use(
   cors({
-    origin: true, // allow all origins
-    credentials: false, // MUST be false when allowing all
-  }),
+    origin: "*",
+  })
 );
+
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ extended: BOOLEAN_TRUE, limit: "200mb" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
