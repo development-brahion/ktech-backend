@@ -2,6 +2,7 @@ import { branches } from "../controller/website/index.js";
 import {
   fileObjectJoiSchema,
   objectIdValidation,
+  optionalString,
   requiredArrayWithMinimumLength,
   requiredBoolean,
   requiredNumber,
@@ -148,6 +149,17 @@ const joiValidation = {
       _id: objectIdValidation("id"),
       status: requiredBoolean(),
     },
+  },
+  "/configs": {
+    companyName: requiredString(1, Number.MAX_SAFE_INTEGER),
+    facebook: optionalString(0, Number.MAX_SAFE_INTEGER),
+    twitter: optionalString(0, Number.MAX_SAFE_INTEGER),
+    instagram: optionalString(0, Number.MAX_SAFE_INTEGER),
+    youtube: optionalString(0, Number.MAX_SAFE_INTEGER),
+    websiteName: requiredString(1, Number.MAX_SAFE_INTEGER),
+    companyPhoneNo: requiredString(1, Number.MAX_SAFE_INTEGER),
+    companyAddress: requiredString(1, Number.MAX_SAFE_INTEGER),
+    companyLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
   },
 };
 
