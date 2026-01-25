@@ -10,6 +10,7 @@ import {
   resultDb,
   momentValueFunc,
   logMessage,
+  parseDateUTC,
 } from "../utils/globalFunction.js";
 
 export const buildSearchQuery = (keyWord = "", searchFields = []) => {
@@ -351,11 +352,17 @@ export const getAllDocuments = async (Model, options = {}, builtIn = true) => {
 
     if (fromDate || toDate) {
       const createdAtFilter = {};
-      if (fromDate) createdAtFilter.$gte = momentValueFunc(fromDate);
-      if (toDate) createdAtFilter.$lte = momentValueFunc(toDate) + 86400000;
+
+      if (fromDate) {
+        createdAtFilter.$gte = parseDateUTC(fromDate).start;
+      }
+
+      if (toDate) {
+        createdAtFilter.$lte = parseDateUTC(toDate).end;
+      }
+
       andConditions.push({ createdAt: createdAtFilter });
     }
-
     const finalQuery =
       andConditions.length === 1 ? andConditions[0] : { $and: andConditions };
 
@@ -415,8 +422,15 @@ export const getListDocuments = async (
 
     if (fromDate || toDate) {
       const createdAtFilter = {};
-      if (fromDate) createdAtFilter.$gte = momentValueFunc(fromDate);
-      if (toDate) createdAtFilter.$lte = momentValueFunc(toDate) + 86400000;
+
+      if (fromDate) {
+        createdAtFilter.$gte = parseDateUTC(fromDate).start;
+      }
+
+      if (toDate) {
+        createdAtFilter.$lte = parseDateUTC(toDate).end;
+      }
+
       andConditions.push({ createdAt: createdAtFilter });
     }
 

@@ -1,8 +1,10 @@
+import { branches } from "../controller/website/index.js";
 import {
   fileObjectJoiSchema,
   objectIdValidation,
   requiredArrayWithMinimumLength,
   requiredBoolean,
+  requiredNumber,
   requiredObject,
   requiredString,
   urlValidation,
@@ -99,6 +101,48 @@ const joiValidation = {
         objectIdValidation("category id"),
         1,
       ),
+    },
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+  },
+  branches: {
+    "/create": {
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+      state: requiredString(1, Number.MAX_SAFE_INTEGER),
+      city: requiredString(1, Number.MAX_SAFE_INTEGER),
+      country: requiredString(1, Number.MAX_SAFE_INTEGER),
+      address: requiredString(1, Number.MAX_SAFE_INTEGER),
+      pincode: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+      state: requiredString(1, Number.MAX_SAFE_INTEGER),
+      city: requiredString(1, Number.MAX_SAFE_INTEGER),
+      country: requiredString(1, Number.MAX_SAFE_INTEGER),
+      address: requiredString(1, Number.MAX_SAFE_INTEGER),
+      pincode: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+  },
+  testimonials: {
+    "/create": {
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+      imageUrl: fileObjectJoiSchema(),
+      rating: requiredNumber(1, 5),
+      text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+      imageUrl: fileObjectJoiSchema(),
+      rating: requiredNumber(1, 5),
+      text: requiredString(1, Number.MAX_SAFE_INTEGER),
     },
     "/enable-disable": {
       _id: objectIdValidation("id"),

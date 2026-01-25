@@ -4,6 +4,8 @@ import { validationMiddleware } from "../../middlewares/validationMiddleware.js"
 import languageRoutes from "./languages.js";
 import categoryRoutes from "./category.js";
 import blogRoutes from "./blogs.js";
+import branchRoutes from "./branches.js";
+import testimonialRoutes from "./testimonials.js";
 
 const router = Router();
 
@@ -22,5 +24,7 @@ router.post(
 router.use("/languages", languageRoutes);
 router.use("/category", categoryRoutes);
 router.use("/blogs", blogRoutes);
+router.use("/branches", branchRoutes);
+router.use("/testimonials", testimonialRoutes);
 
 export default router;

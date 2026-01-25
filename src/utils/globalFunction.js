@@ -343,3 +343,12 @@ export async function hashAndEncryptPassword(password) {
     encryptedPassword: `${IV.toString("hex")}:${encrypted}`,
   };
 }
+
+export const parseDateUTC = (dateStr) => {
+  const [day, month, year] = dateStr.split("-").map(Number);
+
+  return {
+    start: new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)),
+    end: new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)),
+  };
+};

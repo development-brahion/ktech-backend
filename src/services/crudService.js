@@ -328,7 +328,6 @@ const globalCrudService = {
 
   getList: (model, isDeletedApplicable) => async (req, res) => {
     try {
-      console.log("isDeletedApplicable", isDeletedApplicable);
       const options = {
         pageNo: parseInt(req.body.page) || 1,
         size: parseInt(req.body.size) || 10,
