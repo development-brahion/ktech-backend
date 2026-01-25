@@ -50,7 +50,7 @@ const parseFormDataFields = (body) => {
         logMessage(
           `Could not parse field '${key}' as JSON. Keeping as string.`,
           e.message,
-          "warn"
+          "warn",
         );
       }
     }
@@ -60,15 +60,23 @@ const parseFormDataFields = (body) => {
 };
 
 const validationMiddleware =
-  (moduleName, role, useCommon = false) =>
+  (moduleName, role, useCommon = false, skipMethods = []) =>
   async (req, res, next) => {
     try {
-      const path = req._parsedUrl.pathname;
+      const method = req.method.toUpperCase();
+
+      if (skipMethods.includes(method)) {
+        req.body = {};
+        return next();
+      }
+
+      const path = req.path;
+
       const schemaObject = useCommon
         ? commonValidators[path] || {}
         : role
-        ? moduleValidators[moduleName][role]?.[path] || {}
-        : moduleValidators[moduleName]?.[path] || {};
+          ? moduleValidators[moduleName]?.[role]?.[path] || {}
+          : moduleValidators[moduleName]?.[path] || {};
 
       const schema = Joi.object(schemaObject);
 
@@ -84,12 +92,11 @@ const validationMiddleware =
           errorMessages,
           CONSTANTS.DATA_NULL,
           CONSTANTS.BAD_REQUEST,
-          CONSTANTS.ERROR_TRUE
+          CONSTANTS.ERROR_TRUE,
         );
       }
 
       req.body = bodyToValidate;
-
       next();
     } catch (error) {
       logMessage("Error in validation middleware", error, "error");
@@ -100,7 +107,7 @@ const validationMiddleware =
         "Internal server error during validation.",
         CONSTANTS.DATA_NULL,
         CONSTANTS.INTERNAL_SERVER_ERROR,
-        CONSTANTS.ERROR_TRUE
+        CONSTANTS.ERROR_TRUE,
       );
     }
   };
@@ -127,7 +134,7 @@ const multerErrorHandler = (err, req, res, next) => {
       errorMessage,
       CONSTANTS.DATA_NULL,
       CONSTANTS.BAD_REQUEST,
-      CONSTANTS.ERROR_TRUE
+      CONSTANTS.ERROR_TRUE,
     );
   }
 

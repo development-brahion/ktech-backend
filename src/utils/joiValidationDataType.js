@@ -155,7 +155,7 @@ export const passwordChangeSchema = () => {
         "string.max": `New Password must be at most ${30} characters`,
         "string.pattern.base": STRONG_PASSWORD_ERROR.replace(
           "Password",
-          "New Password"
+          "New Password",
         ),
         "any.disallow": "New Password is required",
       })
@@ -199,7 +199,7 @@ export const requiredOptionalStringConditionArray = (
   field = "status",
   valuesArray,
   min,
-  max
+  max,
 ) =>
   Joi.string()
     .min(min)
@@ -228,7 +228,7 @@ export const requiredTimestamp = () => Joi.number().integer().required();
 
 export const patternValidatorOptional = (
   pattern = /^[0-9]{9,18}$/,
-  errorMessage = "Invalid format"
+  errorMessage = "Invalid format",
 ) => {
   return Joi.string().pattern(pattern).optional().messages({
     "string.pattern.base": errorMessage,
@@ -411,7 +411,7 @@ export const conditionalArray = (
   dependentField,
   matchValues = [],
   min = 1,
-  itemsSchema = Joi.string()
+  itemsSchema = Joi.string(),
 ) => {
   return Joi.alternatives().conditional(Joi.ref(dependentField), {
     is: Joi.valid(...matchValues),
@@ -451,7 +451,7 @@ export const loginIdentifierValidation = () =>
         const { error } = usernameSchema.validate(value);
         if (error) {
           return helpers.message(
-            "Username must be 3–30 characters and can only contain letters, numbers, and underscores"
+            "Username must be 3–30 characters and can only contain letters, numbers, and underscores",
           );
         }
       }
@@ -475,7 +475,7 @@ export const requiredOptionalArray = (
   value,
   min = 1,
   max = undefined,
-  itemsSchema = Joi.any()
+  itemsSchema = Joi.any(),
 ) =>
   Joi.array()
     .items(itemsSchema)
@@ -580,7 +580,7 @@ export const arrayValidation = (schema) => Joi.array().items(schema).optional();
 export const requiredOptionalUnixTimestamp = (
   fieldToCheck,
   triggerValue,
-  timestampField = "time"
+  timestampField = "time",
 ) => {
   return Joi.number()
     .integer()
@@ -597,4 +597,13 @@ export const requiredOptionalUnixTimestamp = (
         }),
       otherwise: Joi.optional(),
     });
+};
+
+export const fileObjectJoiSchema = () => {
+  return Joi.object({
+    filename: Joi.string().required(),
+    path: Joi.string().required(),
+    mimetype: Joi.string().required(),
+    url: Joi.string().uri().required(),
+  });
 };

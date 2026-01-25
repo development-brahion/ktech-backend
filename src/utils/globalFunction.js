@@ -55,7 +55,7 @@ export const apiHTTPResponse = (
   message = CONSTANTS.DATA_NULL,
   data = CONSTANTS.DATA_NULL,
   code = CONSTANTS.SERVICE_UNAVAILABLE,
-  error = CONSTANTS.ERROR_TRUE
+  error = CONSTANTS.ERROR_TRUE,
 ) => {
   return res.status(httpCode).json({
     message: message || "error",
@@ -69,6 +69,7 @@ export const joiValidatorFunction = async (schema, data) => {
   try {
     await schema.validateAsync(data, {
       abortEarly: false,
+      allowUnknown: false,
     });
     return null;
   } catch (error) {
@@ -130,7 +131,7 @@ export const momentValueFunc = (value, format = "DD-MM-YYYY") => {
 export function getAlreadyExistsMessage(
   entity,
   message,
-  isSpecialType = false
+  isSpecialType = false,
 ) {
   if (isSpecialType) {
     const formattedEntity = entity
@@ -221,7 +222,7 @@ export function generateUniqueId(prefix = "ID") {
 
 export const formatDateByMomentTimeZone = (
   timestamp,
-  format = "D MMM YYYY"
+  format = "D MMM YYYY",
 ) => {
   return moment.tz(timestamp, guessedTimezone).format(format);
 };
@@ -245,7 +246,7 @@ export const generateSlug = (text) => {
 export function logMessage(
   message = "Default log message",
   error = null,
-  level = "info"
+  level = "info",
 ) {
   const upperMessage = message.toUpperCase();
 
@@ -342,4 +343,3 @@ export async function hashAndEncryptPassword(password) {
     encryptedPassword: `${IV.toString("hex")}:${encrypted}`,
   };
 }
-
