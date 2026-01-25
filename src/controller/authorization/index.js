@@ -349,3 +349,48 @@ export const changePassword = async (req, res) => {
     );
   }
 };
+
+export const updateProfilePhoto = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { profilephoto } = req.body;
+
+    const user = await User.findOne({
+      _id: id,
+    });
+
+    if (!user) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "User not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    user.profilephoto = [profilephoto];
+
+    await user.save();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Profile photo updated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in updateProfilePhoto controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};

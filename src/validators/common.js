@@ -55,7 +55,7 @@ const joiValidation = {
     populate: optionalString(0, Number.MAX_SAFE_INTEGER),
   },
   "/upload": {
-    module: optionalEnum(["default", "admin"]),
+    module: optionalEnum(["default", "admin","profile","instructor","student","company","job"]),
   },
 };
 
