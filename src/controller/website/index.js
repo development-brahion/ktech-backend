@@ -4,5 +4,6 @@ import * as category from "./category.js";
 import * as blogs from "./blogs.js";
 import * as branches from "./branches.js";
 import * as testimonials from "./testimonials.js";
+import * as configs from "./configs.js";
 
-export { home, languages, category, blogs, branches, testimonials };
+export { home, languages, category, blogs, branches, testimonials,configs };

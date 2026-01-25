@@ -21,6 +21,18 @@ router.post(
   controllers.websiteController.home.updateHomePanel,
 );
 
+router.get(
+  "/configs",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.configs.getConfigPanel,
+);
+
+router.post(
+  "/configs",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.configs.updateConfigPanel,
+);
+
 router.use("/languages", languageRoutes);
 router.use("/category", categoryRoutes);
 router.use("/blogs", blogRoutes);
