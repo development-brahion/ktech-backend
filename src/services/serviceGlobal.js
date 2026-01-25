@@ -28,8 +28,7 @@ export const buildSearchQuery = (keyWord = "", searchFields = []) => {
 export const buildPopulateFields = (populateStr = "") => {
   if (!populateStr) return [];
 
-    if (Array.isArray(populateStr)) return populateStr;
-
+  if (Array.isArray(populateStr)) return populateStr;
 
   const parseEntry = (pathParts, fields) => {
     if (pathParts.length === 0) return null;
@@ -85,7 +84,7 @@ export const createDocument = async (Model, data) => {
     logMessage(
       `Error in Service ${Model.modelName} Create Document : `,
       err,
-      "error"
+      "error",
     );
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
   }
@@ -104,7 +103,7 @@ export const findOneByQuery = async (Model, query) => {
 export const findOneByQueryWithPopulate = async (
   Model,
   query,
-  populateOptions
+  populateOptions,
 ) => {
   try {
     const doc = await Model.findOne(query).populate(populateOptions).exec();
@@ -133,7 +132,7 @@ export const findOneByQueryLeanWithSelect = async (Model, query, select) => {
     logMessage(
       "Error in findOneByQueryLeanWithSelect service : ",
       err,
-      "error"
+      "error",
     );
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
   }
@@ -153,7 +152,7 @@ export const findOneByQueryLeanWithPopulateAndSelect = async (
   Model,
   query,
   select,
-  populateOptions
+  populateOptions,
 ) => {
   try {
     const doc = await Model.findOne(query)
@@ -166,7 +165,7 @@ export const findOneByQueryLeanWithPopulateAndSelect = async (
     logMessage(
       "Error in findOneByQueryLeanWithPopulateAndSelect service : ",
       err,
-      "error"
+      "error",
     );
 
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
@@ -177,7 +176,7 @@ export const findByQueryLeanWithPopulateAndSelect = async (
   Model,
   query,
   select,
-  populateOptions
+  populateOptions,
 ) => {
   try {
     const docs = await Model.find(query)
@@ -189,7 +188,7 @@ export const findByQueryLeanWithPopulateAndSelect = async (
     logMessage(
       "Error in findByQueryLeanWithPopulateAndSelect service : ",
       err,
-      "error"
+      "error",
     );
 
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
@@ -201,7 +200,7 @@ export const updateDocument = async (
   _id,
   data,
   isFromCrud = BOOLEAN_FALSE,
-  extraQuery = {}
+  extraQuery = {},
 ) => {
   try {
     let query = { _id, ...extraQuery };
@@ -213,14 +212,14 @@ export const updateDocument = async (
     const updated = await Model.findOneAndUpdate(
       query,
       { $set: data },
-      { new: true }
+      { new: true },
     );
     return updated ? resultDb(OK, updated) : resultDb(NOT_FOUND, DATA_NULL);
   } catch (err) {
     logMessage(
       `Error in Service ${Model.modelName} Update Document : `,
       err,
-      "error"
+      "error",
     );
 
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
@@ -243,7 +242,7 @@ export const updateDocumentByQueryAndData = async (
   Model,
   query,
   data,
-  forceSet = true
+  forceSet = true,
 ) => {
   try {
     let updateOperation;
@@ -260,7 +259,7 @@ export const updateDocumentByQueryAndData = async (
     logMessage(
       "Error in updateDocumentByQueryAndData service : ",
       err,
-      "error"
+      "error",
     );
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
   }
@@ -271,7 +270,7 @@ export const updateFieldById = async (Model, id, fieldName, value) => {
     const updated = await Model.findOneAndUpdate(
       { _id: id },
       { [fieldName]: value },
-      { new: true }
+      { new: true },
     );
     return updated ? resultDb(OK, updated) : resultDb(NOT_FOUND, DATA_NULL);
   } catch (err) {
@@ -283,7 +282,7 @@ export const updateFieldById = async (Model, id, fieldName, value) => {
 export const updateMultipleDocumentByQueryAndData = async (
   Model,
   query,
-  data
+  data,
 ) => {
   try {
     const updated = await Model.updateMany(query, { $set: data });
@@ -292,7 +291,7 @@ export const updateMultipleDocumentByQueryAndData = async (
     logMessage(
       "Error in updateMultipleDocumentByQueryAndData service : ",
       err,
-      "error"
+      "error",
     );
 
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
@@ -314,7 +313,7 @@ export const softDeleteDocument = async (Model, query) => {
     const updated = await Model.findOneAndUpdate(
       query,
       { isDeleted: true },
-      { new: true }
+      { new: true },
     );
     return updated ? resultDb(OK, updated) : resultDb(NOT_FOUND, DATA_NULL);
   } catch (err) {
@@ -381,7 +380,7 @@ export const getAllDocuments = async (Model, options = {}, builtIn = true) => {
 export const getListDocuments = async (
   Model,
   options = {},
-  isDeletedApplicable
+  isDeletedApplicable,
 ) => {
   try {
     const {
@@ -478,7 +477,7 @@ export const createMultipleDocuments = async (Model, dataArray) => {
       `
       Error in Service ${Model.modelName} Create Multiple Documents : `,
       err,
-      "error"
+      "error",
     );
 
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
@@ -488,7 +487,7 @@ export const createMultipleDocuments = async (Model, dataArray) => {
 export const updateMultipleDocumentByQuery = async (
   Model,
   query,
-  updatingQuery
+  updatingQuery,
 ) => {
   try {
     const updated = await Model.updateMany(query, updatingQuery);
@@ -500,7 +499,7 @@ export const updateMultipleDocumentByQuery = async (
       `
       Error in Service ${Model.modelName} Update Multiple Documents By Query : `,
       err,
-      "error"
+      "error",
     );
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
   }
@@ -512,6 +511,32 @@ export const countDocumentsByQuery = async (Model, query) => {
     return count > 0 ? resultDb(OK, count) : resultDb(NOT_FOUND, 0);
   } catch (err) {
     logMessage("Error in countDocumentsByQuery service : ", err, "error");
+    return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
+  }
+};
+
+export const updateAndCreateDocumentByQueryAndData = async (
+  Model,
+  query = {},
+  data,
+) => {
+  try {
+    const updated = await Model.findOneAndUpdate(
+      query,
+      { $set: data },
+      {
+        new: true,
+        upsert: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+    return updated ? resultDb(OK, updated) : resultDb(NOT_FOUND, DATA_NULL);
+  } catch (err) {
+    logMessage(
+      "Error in updateDocumentByQueryAndData service : ",
+      err,
+      "error",
+    );
     return resultDb(INTERNAL_SERVER_ERROR, DATA_NULL);
   }
 };
