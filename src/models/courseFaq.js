@@ -14,7 +14,7 @@ const courseFaqItemSchema = new Schema(
       default: "",
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // Main CourseFaq Schema
@@ -45,8 +45,12 @@ const CourseFaqSchema = new Schema(
       type: [courseFaqItemSchema],
       default: [],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Model

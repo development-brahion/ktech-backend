@@ -16,7 +16,7 @@ const aboutUsSchema = new Schema(
       bannerLogo: [FileDbSchema],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const AboutUs = mongoose.model("AboutUs", aboutUsSchema);
@@ -34,12 +34,12 @@ const termsAndConditionsSchema = new Schema(
       bannerLogo: [FileDbSchema],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const TermsAndConditions = mongoose.model(
   "TermsAndConditions",
-  termsAndConditionsSchema
+  termsAndConditionsSchema,
 );
 
 const privacyPolicySchema = new Schema(
@@ -55,10 +55,28 @@ const privacyPolicySchema = new Schema(
       bannerLogo: [FileDbSchema],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const PrivacyPolicy = mongoose.model(
   "PrivacyPolicy",
-  privacyPolicySchema
+  privacyPolicySchema,
 );
+
+const whyUsSchema = new Schema(
+  {
+    text: {
+      type: String,
+    },
+    whyUsBanner: {
+      heading: String,
+      subHeading: String,
+      bgColor: String,
+      textColor: String,
+      bannerLogo: [FileDbSchema],
+    },
+  },
+  { timestamps: true },
+);
+
+export const WhyUs = mongoose.model("WhyUs", whyUsSchema);

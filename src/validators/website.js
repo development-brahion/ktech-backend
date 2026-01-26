@@ -161,6 +161,62 @@ const joiValidation = {
     companyAddress: requiredString(1, Number.MAX_SAFE_INTEGER),
     companyLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
   },
+  "/course-faq": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    courseFaqBanner: {
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    courseFaq: requiredArrayWithMinimumLength(
+      requiredObject({
+        question: requiredString(1, Number.MAX_SAFE_INTEGER),
+        answer: requiredString(1, Number.MAX_SAFE_INTEGER),
+      }),
+      1,
+    ),
+  },
+  "/about-us": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    aboutBanner: requiredObject({
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
+  "/terms-and-conditions": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    termConditionBanner: requiredObject({
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
+  "/privacy-policy": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    pPolicyBanner: requiredObject({
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
+  "/why-us": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    whyUsBanner: requiredObject({
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
 };
 
 export default joiValidation;

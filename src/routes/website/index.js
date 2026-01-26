@@ -39,4 +39,65 @@ router.use("/blogs", blogRoutes);
 router.use("/branches", branchRoutes);
 router.use("/testimonials", testimonialRoutes);
 
+router.get(
+  "/course-faq",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.courseFaq.getCourseFaqPanel,
+);
+
+router.post(
+  "/course-faq",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.courseFaq.updateCourseFaqPanel,
+);
+
+router.get(
+  "/about-us",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.cms.getAboutUsPanel,
+);
+
+router.post(
+  "/about-us",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.cms.updateAboutUsPanel,
+);
+
+router.get(
+  "/terms-and-conditions",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.cms.getTermsAndConditionsPanel,
+);
+
+router.post(
+  "/terms-and-conditions",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.cms.updateTermsAndConditionsPanel,
+);
+
+router.get(
+  "/privacy-policy",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.cms.getPrivacyPolicyPanel,
+);
+
+router.post(
+  "/privacy-policy",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.cms.updatePrivacyPolicyPanel,
+);
+
+router.get(
+  "/why-us",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.cms.getWhyUsPanel,
+);
+
+router.post(
+  "/why-us",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.cms.updateWhyUsPanel,
+);
+
+
 export default router;

@@ -3,6 +3,7 @@ import {
   AboutUs,
   TermsAndConditions,
   PrivacyPolicy,
+  WhyUs
 } from "./aboutTermPrivacy.js";
 import Admission from "./admission.js";
 import Answer from "./answers.js";
