@@ -99,5 +99,16 @@ router.post(
   controllers.websiteController.cms.updateWhyUsPanel,
 );
 
+router.get(
+  "/configs/templates",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.configs.getConfigTemplatesPanel,
+);
+
+router.post(
+  "/configs/templates",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.configs.updateConfigPanel,
+);
 
 export default router;

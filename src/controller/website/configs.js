@@ -104,3 +104,46 @@ export const getConfigPanel = async (req, res) => {
     );
   }
 };
+
+export const getConfigTemplatesPanel = async (req, res) => {
+  try {
+    const { statusCode, data } = await findOneByQueryLeanWithSelect(
+      Config,
+      {},
+      "-_id templates",
+    );
+
+    if (statusCode === CONSTANTS.OK || statusCode === CONSTANTS.NOT_FOUND) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS[statusCode === CONSTANTS.OK ? "HTTP_OK" : "HTTP_NOT_FOUND"],
+        CONSTANTS_MSG[
+          [statusCode === CONSTANTS.OK ? "SUCCESS_MSG" : "DATA_NOT_FOUND"]
+        ],
+        data,
+        statusCode,
+      );
+    } else {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_BAD_REQUEST,
+        CONSTANTS_MSG.FAILED_MSG,
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.BAD_REQUEST,
+      );
+    }
+  } catch (error) {
+    logMessage("Error in getConfigTemplatesPanel controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { FileDbSchema } from "./fileDb.js";
 
 const { Schema } = mongoose;
 
@@ -16,9 +17,7 @@ const courseSchema = new Schema(
       type: String,
       required: true,
     },
-    mainImageUrl: {
-      type: String,
-    },
+    mainImageUrl: FileDbSchema,
     language: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,6 +50,10 @@ const courseSchema = new Schema(
       type: Number,
       required: true,
     },
+    isDeleted:{
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: true }
 );

@@ -2,6 +2,8 @@ import { branches } from "../controller/website/index.js";
 import {
   fileObjectJoiSchema,
   objectIdValidation,
+  optionalArrayWithMinimumLength,
+  optionalFileObjectJoiSchema,
   optionalString,
   requiredArrayWithMinimumLength,
   requiredBoolean,
@@ -215,6 +217,22 @@ const joiValidation = {
       bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
       textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
       bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
+  "/configs/templates": {
+    templates: requiredObject({
+      certificate: optionalArrayWithMinimumLength(
+        optionalFileObjectJoiSchema(),
+      ),
+      idcard: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
+      hallticket: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
+      Admission: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
+      fees: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
+      marksheet: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
+      trainingCenter: optionalArrayWithMinimumLength(
+        optionalFileObjectJoiSchema(),
+      ),
+      typing: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
     }),
   },
 };

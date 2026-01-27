@@ -607,3 +607,14 @@ export const fileObjectJoiSchema = () => {
     url: Joi.string().uri().required(),
   });
 };
+
+export const optionalFileObjectJoiSchema = () => {
+  return Joi.object({
+    filename: Joi.string().required(),
+    path: Joi.string().required(),
+    mimetype: Joi.string().required(),
+    url: Joi.string().uri().required(),
+  })
+    .optional()
+    .allow({});
+};
