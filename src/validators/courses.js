@@ -33,6 +33,13 @@ const basePlanSchema = {
   course: requiredArrayWithMinimumLength(objectIdValidation("course id"), 1),
 };
 
+const baseBatchSchema = {
+  startTime: requiredString(5, 5),
+  endTime: requiredString(5, 5),
+  courses: requiredArrayWithMinimumLength(objectIdValidation("course id"), 1),
+  totalSeat: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+};
+
 const joiValidation = {
   "/enable-disable": {
     _id: objectIdValidation("id"),
@@ -52,6 +59,17 @@ const joiValidation = {
     "/update": {
       _id: objectIdValidation("id"),
       ...basePlanSchema,
+    },
+  },
+  batches: {
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+    "/create": baseBatchSchema,
+    "/update": {
+      _id: objectIdValidation("id"),
+      ...baseBatchSchema,
     },
   },
 };

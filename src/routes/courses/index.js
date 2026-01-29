@@ -4,6 +4,7 @@ import { validationMiddleware } from "../../middlewares/validationMiddleware.js"
 
 const router = Router();
 const planRouter = Router();
+const batchRouter = Router();
 
 router.get(
   "/list",
@@ -89,6 +90,49 @@ planRouter.get(
   controllers.courseController.getPlanDocument,
 );
 
+batchRouter.get(
+  "/list",
+  validationMiddleware("", "", true),
+  controllers.courseController.batchList,
+);
+
+batchRouter.get(
+  "/all-documents",
+  validationMiddleware("", "", true),
+  controllers.courseController.allBatches,
+);
+
+batchRouter.post(
+  "/create",
+  validationMiddleware("courses", "batches"),
+  controllers.courseController.createBatch,
+);
+
+batchRouter.post(
+  "/update",
+  validationMiddleware("courses", "batches"),
+  controllers.courseController.updateBatch,
+);
+
+batchRouter.post(
+  "/enable-disable",
+  validationMiddleware("courses", "batches"),
+  controllers.courseController.enableDisableBatch,
+);
+
+batchRouter.delete(
+  "/soft-delete",
+  validationMiddleware("", "", true),
+  controllers.courseController.softDeleteBatch,
+);
+
+batchRouter.get(
+  "/single-document",
+  validationMiddleware("", "", true),
+  controllers.courseController.getBatchDocument,
+);
+
 router.use("/plans", planRouter);
+router.use("/batches", batchRouter);
 
 export default router;
