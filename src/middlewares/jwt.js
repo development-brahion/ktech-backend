@@ -17,6 +17,12 @@ const publicPathsForV1 = [
   `${API_END_POINT_V1}auth/forgotpassword`,
   `${API_END_POINT_V1}auth/resetpassword`,
   `${API_END_POINT_V1}website/home`,
+  `${API_END_POINT_V1}website/course-faq`,
+  `${API_END_POINT_V1}website/about-us`,
+  `${API_END_POINT_V1}website/terms-and-conditions`,
+  `${API_END_POINT_V1}website/privacy-policy`,
+  `${API_END_POINT_V1}website/why-us`,
+  `${API_END_POINT_V1}website/refund-policy`,
 ];
 
 const publicPaths = [...publicPathsForV1, /^\/uploads(\/.*)?$/];

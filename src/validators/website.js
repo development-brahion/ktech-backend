@@ -235,6 +235,16 @@ const joiValidation = {
       typing: optionalArrayWithMinimumLength(optionalFileObjectJoiSchema()),
     }),
   },
+  "/refund-policy": {
+    text: requiredString(1, Number.MAX_SAFE_INTEGER),
+    refundBanner: requiredObject({
+      heading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      subHeading: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bgColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      textColor: requiredString(1, Number.MAX_SAFE_INTEGER),
+      bannerLogo: requiredArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    }),
+  },
 };
 
 export default joiValidation;

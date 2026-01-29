@@ -111,4 +111,16 @@ router.post(
   controllers.websiteController.configs.updateConfigPanel,
 );
 
+router.get(
+  "/refund-policy",
+  validationMiddleware("website", "", false, ["GET"]),
+  controllers.websiteController.cms.getRefundPolicyPanel,
+);
+
+router.post(
+  "/refund-policy",
+  validationMiddleware("website", "", false),
+  controllers.websiteController.cms.updateRefundPolicyPanel,
+);
+
 export default router;

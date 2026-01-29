@@ -80,3 +80,21 @@ const whyUsSchema = new Schema(
 );
 
 export const WhyUs = mongoose.model("WhyUs", whyUsSchema);
+
+const refundPolicySchema = new Schema(
+  {
+    text: {
+      type: String,
+    },
+    refundBanner: {
+      heading: String,
+      subHeading: String,
+      bgColor: String,
+      textColor: String,
+      bannerLogo: [FileDbSchema],
+    },
+  },
+  { timestamps: true },
+);
+
+export const RefundPolicy = mongoose.model("RefundPolicy", refundPolicySchema);
