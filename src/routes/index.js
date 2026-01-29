@@ -3,6 +3,7 @@ import authorizationRoutes from "./authorization/index.js";
 import filesRoutes from "./files/index.js";
 import websiteRoutes from "./website/index.js";
 import coursesRoutes from "./courses/index.js";
+import inquireRoutes from "./inquires/index.js";
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use("/auth", authorizationRoutes);
 router.use("/files", filesRoutes);
 router.use("/website", websiteRoutes);
 router.use("/courses", coursesRoutes);
+router.use("/inquires", inquireRoutes);
 
 export default router;
