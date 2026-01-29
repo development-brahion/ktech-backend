@@ -27,6 +27,12 @@ const baseCourseSchema = {
   totalLectures: requiredNumber(1, Number.MAX_SAFE_INTEGER),
 };
 
+const basePlanSchema = {
+  name: requiredString(1, Number.MAX_SAFE_INTEGER),
+  amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  course: requiredArrayWithMinimumLength(objectIdValidation("course id"), 1),
+};
+
 const joiValidation = {
   "/enable-disable": {
     _id: objectIdValidation("id"),
@@ -36,6 +42,17 @@ const joiValidation = {
   "/update": {
     _id: objectIdValidation("id"),
     ...baseCourseSchema,
+  },
+  plans: {
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+    "/create": basePlanSchema,
+    "/update": {
+      _id: objectIdValidation("id"),
+      ...basePlanSchema,
+    },
   },
 };
 

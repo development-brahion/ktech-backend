@@ -171,5 +171,21 @@ export const nameStatusController = (
         );
       }
     },
+    singleDocument: async (req, res) => {
+      try {
+        return crudService.getById(Model)(req, res);
+      } catch (error) {
+        logMessage(`Error in single document ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
   };
 };

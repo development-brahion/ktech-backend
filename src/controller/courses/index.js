@@ -1,9 +1,10 @@
 import { apiHTTPResponse, logMessage } from "../../utils/globalFunction.js";
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
-import { Course } from "../../models/index.js";
+import { Course, CoursePlans } from "../../models/index.js";
 import crudService from "../../services/crudService.js";
 import { findOneByQueryLean } from "../../services/serviceGlobal.js";
+import { nameStatusController } from "../common.js";
 
 const courseMessages = {
   create: "Course created successfully",
@@ -12,6 +13,15 @@ const courseMessages = {
   delete: "Course deleted successfully",
   exists: "Course already exists",
   fetched: "Course fetched successfully",
+};
+
+const planMessages = {
+  create: "Course plan created successfully",
+  update: "Course plan updated successfully",
+  status: "Course plan status updated successfully",
+  delete: "Course plan deleted successfully",
+  exists: "Course plan already exists",
+  fetched: "Course plan fetched successfully",
 };
 
 export const list = async (req, res) => {
@@ -196,3 +206,13 @@ export const getDocument = async (req, res) => {
     );
   }
 };
+
+export const {
+  list: planList,
+  create: createPlan,
+  update: updatePlan,
+  enableDisable: enableDisablePlan,
+  softDelete: softDeletePlan,
+  allDocs: allPlans,
+  singleDocument: getPlanDocument,
+} = nameStatusController(CoursePlans, planMessages, "Course plan");

@@ -26,6 +26,10 @@ const coursePlansSchema = new Schema(
     //   type: mongoose.Schema.Types.ObjectId,
     //   ref: "Batch",
     // },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
