@@ -1,8 +1,10 @@
-import { apiHTTPResponse, logMessage } from "../../utils/globalFunction.js";
-import * as CONSTANTS from "../../utils/constants.js";
-import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
-import { Department, Designation } from "../../models/index.js";
-import crudService from "../../services/crudService.js";
+import {
+  Department,
+  Designation,
+  Goal,
+  LeaveType,
+  Role,
+} from "../../models/index.js";
 import { nameStatusController } from "../common.js";
 
 const departmentMessages = {
@@ -21,6 +23,29 @@ const designationMessages = {
   delete: "Designation deleted successfully",
   exists: "Designation already exists",
   fetched: "Designation fetched successfully",
+};
+
+const roleMessages = {
+  create: "Role created successfully",
+  delete: "Role deleted successfully",
+  exists: "Role already exists",
+  fetched: "Role fetched successfully",
+};
+
+const goalMessages = {
+  create: "Goal created successfully",
+  delete: "Goal deleted successfully",
+  exists: "Goal already exists",
+  fetched: "Goal fetched successfully",
+};
+
+const leaveTypeMessages = {
+  create: "Leave type created successfully",
+  update: "Leave type updated successfully",
+  status: "Leave type status updated successfully",
+  delete: "Leave type deleted successfully",
+  exists: "Leave type already exists",
+  fetched: "Leave type fetched successfully",
 };
 
 export const {
@@ -42,3 +67,26 @@ export const {
   allDocs: allDesignations,
   singleDocument: getDesignationDocument,
 } = nameStatusController(Designation, designationMessages, "Designation");
+
+export const {
+  list: roleList,
+  create: createRole,
+  softDelete: softDeleteRole,
+  allDocs: allRoles,
+} = nameStatusController(Role, roleMessages, "Role");
+
+export const {
+  list: goalList,
+  create: createGoal,
+  softDelete: softDeleteGoal,
+  allDocs: allGoals,
+} = nameStatusController(Goal, goalMessages, "Goal");
+
+export const {
+  list: leaveTypeList,
+  create: createLeaveType,
+  update: updateLeaveType,
+  enableDisable: enableDisableLeaveType,
+  softDelete: softDeleteLeaveType,
+  allDocs: allLeaveTypes,
+} = nameStatusController(LeaveType, leaveTypeMessages, "Leave type");
