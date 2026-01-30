@@ -8,6 +8,7 @@ const userSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,
@@ -16,6 +17,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
+      trim: true,
     },
     token: {
       type: String,
@@ -68,9 +70,7 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    profilephoto: [
-      FileDbSchema
-    ],
+    profilephoto: [FileDbSchema],
     Roleid: [
       {
         type: mongoose.Types.ObjectId,
@@ -83,8 +83,12 @@ const userSchema = new Schema(
         ref: "Goal",
       },
     ],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema);

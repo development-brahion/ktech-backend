@@ -7,6 +7,7 @@ const languageSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,
@@ -17,7 +18,7 @@ const languageSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Language = mongoose.model("Language", languageSchema);

@@ -36,6 +36,7 @@ export const nameStatusController = (
           isDeleted: CONSTANTS.BOOLEAN_FALSE,
         });
 
+
         if (statusCode === CONSTANTS.OK) {
           return apiHTTPResponse(
             req,
@@ -46,6 +47,8 @@ export const nameStatusController = (
             CONSTANTS.CONFLICT,
           );
         }
+
+        req.body.name = name.trim();
 
         return crudService.create(
           Model,
@@ -86,6 +89,9 @@ export const nameStatusController = (
             CONSTANTS.CONFLICT,
           );
         }
+
+        req.body.name = name.trim();
+
 
         return crudService.update(
           Model,

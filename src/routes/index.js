@@ -4,6 +4,7 @@ import filesRoutes from "./files/index.js";
 import websiteRoutes from "./website/index.js";
 import coursesRoutes from "./courses/index.js";
 import inquireRoutes from "./inquires/index.js";
+import employeeRoutes from "./employee/index.js";
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use("/files", filesRoutes);
 router.use("/website", websiteRoutes);
 router.use("/courses", coursesRoutes);
 router.use("/inquires", inquireRoutes);
+router.use("/employee", employeeRoutes);
 
 export default router;

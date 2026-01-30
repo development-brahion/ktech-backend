@@ -6,6 +6,7 @@ const goalSchema = new Schema(
   {
     name: {
       type: String,
+      trim: true,
     },
     designation: {
       type: mongoose.Types.ObjectId,
@@ -22,6 +23,7 @@ const goalSchema = new Schema(
     },
     duration: {
       type: String,
+      trim: true,
     },
     assignTo: [
       {
@@ -52,8 +54,12 @@ const goalSchema = new Schema(
       type: mongoose.Types.ObjectId,
       ref: "Department",
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Goal = mongoose.model("Goal", goalSchema);

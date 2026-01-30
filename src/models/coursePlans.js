@@ -7,6 +7,7 @@ const coursePlansSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,
@@ -31,7 +32,7 @@ const coursePlansSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CoursePlans = mongoose.model("CoursePlans", coursePlansSchema);

@@ -3,12 +3,14 @@ import authorization from "./authorization.js";
 import website from "./website.js";
 import courses from "./courses.js";
 import inquires from "./inquires.js";
+import employee from "./employee.js";
 
 const moduleValidators = {
   authorization,
   website,
   courses,
   inquires,
+  employee,
 };
 
 const validators = {

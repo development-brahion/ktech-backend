@@ -8,14 +8,17 @@ const courseSchema = new Schema(
     template: {
       type: String,
       required: true,
+      trim: true,
     },
     courseName: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
     mainImageUrl: FileDbSchema,
     language: [
@@ -50,12 +53,12 @@ const courseSchema = new Schema(
       type: Number,
       required: true,
     },
-    isDeleted:{
+    isDeleted: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Courses = mongoose.model("Courses", courseSchema);

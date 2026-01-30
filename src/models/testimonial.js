@@ -7,6 +7,7 @@ const testimonialSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     imageUrl: FileDbSchema,
     rating: {
@@ -15,6 +16,7 @@ const testimonialSchema = new Schema(
     text: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,

@@ -7,6 +7,7 @@ const categorySchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,
