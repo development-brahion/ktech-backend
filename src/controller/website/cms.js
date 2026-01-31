@@ -7,11 +7,13 @@ import {
   PrivacyPolicy,
   RefundPolicy,
   WhyUs,
+  Query,
 } from "../../models/index.js";
 import {
   findOneByQueryLeanWithSelect,
   updateAndCreateDocumentByQueryAndData,
 } from "../../services/serviceGlobal.js";
+import crudService from "../../services/crudService.js";
 
 export const updateAboutUsPanel = async (req, res) => {
   try {
@@ -499,6 +501,44 @@ export const getRefundPolicyPanel = async (req, res) => {
     );
   } catch (error) {
     logMessage("Error in getRefundPolicyPanel controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};
+
+export const getQueryList = async (req, res) => {
+  try {
+    return crudService.getList(Query, CONSTANTS.BOOLEAN_FALSE)(req, res);
+  } catch (error) {
+    logMessage("Error in getQueryList controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};
+
+export const submitQuery = async (req, res) => {
+  try {
+    return crudService.create(
+      Query,
+      "Your query is submitted,we will contact you soon.",
+      CONSTANTS.BOOLEAN_TRUE,
+    )(req, res);
+  } catch (error) {
+    logMessage("Error in submitQuery controller", error, "error");
     return apiHTTPResponse(
       req,
       res,

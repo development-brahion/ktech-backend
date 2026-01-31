@@ -123,4 +123,16 @@ router.post(
   controllers.websiteController.cms.updateRefundPolicyPanel,
 );
 
+router.get(
+  "/queries",
+  validationMiddleware("website"),
+  controllers.websiteController.cms.getQueryList,
+);
+
+router.post(
+  "/queries/submit",
+  validationMiddleware("website"),
+  controllers.websiteController.cms.submitQuery,
+);
+
 export default router;
