@@ -1,4 +1,4 @@
-import { Inquiry, Source, Status } from "../../models/index.js";
+import { Inquiry, Source, Status, VisitorsBook } from "../../models/index.js";
 import {
   findByQueryLeanWithSelect,
   findOneByQueryLean,
@@ -38,6 +38,13 @@ const inquiryMessages = {
   fetched: "Inquiry fetched successfully",
   remarkAdded: "Remark added successfully",
   notFound: "Inquiry not found",
+};
+
+const visitorMessages = {
+  create: "Visitor book created successfully",
+  update: "Visitor book updated successfully",
+  delete: "Visitor book deleted successfully",
+  fetched: "Visitor book fetched successfully",
 };
 
 export const {
@@ -173,6 +180,53 @@ export const followUps = async (req, res) => {
     );
   } catch (error) {
     logMessage("Error in follow ups", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.SERVER_ERROR,
+    );
+  }
+};
+
+export const {
+  list: visitorBookList,
+  create: createVisitorBook,
+  update: updateVisitorBook,
+  softDelete: softDeleteVisitorBook,
+} = crudController(VisitorsBook, visitorMessages, "Visitor book");
+
+export const followUpsOnVisitorBook = async (req, res) => {
+  try {
+    const start = momentTZ.tz(guessedTimezone).startOf("day").utc().toDate();
+    const end = momentTZ.tz(guessedTimezone).endOf("day").utc().toDate();
+
+    const query = {
+      isDeleted: CONSTANTS.BOOLEAN_FALSE,
+      followUpDate: {
+        $gte: start,
+        $lte: end,
+      },
+    };
+
+    const { data } = await findByQueryLeanWithSelect(
+      VisitorsBook,
+      query,
+      "name phoneNo meetingWith followUpDate purpose",
+    );
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      CONSTANTS_MSG.SUCCESS_MSG,
+      data ?? [],
+      CONSTANTS.HTTP_OK,
+    );
+  } catch (error) {
+    logMessage("Error in follow ups visitor book", error, "error");
     return apiHTTPResponse(
       req,
       res,

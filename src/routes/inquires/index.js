@@ -5,6 +5,7 @@ import { validationMiddleware } from "../../middlewares/validationMiddleware.js"
 const router = Router();
 const sourceRouter = Router();
 const statusRouter = Router();
+const visitorRouter = Router();
 
 sourceRouter.get(
   "/list",
@@ -126,7 +127,38 @@ router.get(
   controllers.inquireController.followUps,
 );
 
+visitorRouter.get(
+  "/list",
+  validationMiddleware("", "", true),
+  controllers.inquireController.visitorBookList,
+);
+
+visitorRouter.post(
+  "/create",
+  validationMiddleware("inquires", "visitors"),
+  controllers.inquireController.createVisitorBook,
+);
+
+visitorRouter.post(
+  "/update",
+  validationMiddleware("inquires", "visitors"),
+  controllers.inquireController.updateVisitorBook,
+);
+
+visitorRouter.delete(
+  "/soft-delete",
+  validationMiddleware("", "", true),
+  controllers.inquireController.softDeleteVisitorBook,
+);
+
+visitorRouter.get(
+  "/follow-up",
+  validationMiddleware(),
+  controllers.inquireController.followUpsOnVisitorBook,
+);
+
 router.use("/source", sourceRouter);
 router.use("/status", statusRouter);
+router.use("/visitors", visitorRouter);
 
 export default router;

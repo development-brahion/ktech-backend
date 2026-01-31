@@ -19,6 +19,18 @@ const baseInquirySchema = {
   status: objectIdValidation("status id"),
 };
 
+const baseVisitorSchema = {
+  name: requiredString(1, Number.MAX_SAFE_INTEGER),
+  meetingWith: requiredString(1, Number.MAX_SAFE_INTEGER),
+  phoneNo: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  totalPerson: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  date: requiredString(1, Number.MAX_SAFE_INTEGER),
+  followUpDate: requiredString(1, Number.MAX_SAFE_INTEGER),
+  inTime: requiredString(1, Number.MAX_SAFE_INTEGER),
+  outTime: requiredString(1, Number.MAX_SAFE_INTEGER),
+  purpose: requiredString(1, Number.MAX_SAFE_INTEGER),
+};
+
 const joiValidation = {
   source: {
     "/create": {
@@ -60,7 +72,13 @@ const joiValidation = {
     remarks: requiredString(1, Number.MAX_SAFE_INTEGER),
     dateAndTime: optionalString(0, Number.MAX_SAFE_INTEGER),
   },
- 
+  visitors: {
+    "/create": baseVisitorSchema,
+    "/update": {
+      _id: objectIdValidation("id"),
+      ...baseVisitorSchema,
+    },
+  },
 };
 
 export default joiValidation;
