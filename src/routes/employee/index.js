@@ -8,6 +8,7 @@ const designationRouter = Router();
 const roleRouter = Router();
 const goalRouter = Router();
 const leaveTypeRouter = Router();
+const teacherRouter = Router();
 
 departmentRouter.get(
   "/list",
@@ -177,10 +178,41 @@ leaveTypeRouter.delete(
   controllers.employeeController.softDeleteLeaveType,
 );
 
+teacherRouter.get(
+  "/list",
+  validationMiddleware("", "", true),
+  controllers.employeeController.teacherList,
+);
+
+teacherRouter.get(
+  "/all-documents",
+  validationMiddleware("", "", true),
+  controllers.employeeController.allTeachers,
+);
+
+teacherRouter.post(
+  "/enable-disable",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.enableDisableTeacher,
+);
+
+teacherRouter.post(
+  "/update",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.updateTeacher,
+);
+
+teacherRouter.post(
+  "/update-password",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.updateTeacherPassword,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);
 router.use("/goals", goalRouter);
 router.use("/leave-types", leaveTypeRouter);
+router.use("/teachers", teacherRouter);
 
 export default router;

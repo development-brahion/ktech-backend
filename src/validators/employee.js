@@ -1,5 +1,10 @@
 import {
+  confirmPasswordValidation,
+  emailValidation,
+  fileObjectJoiSchema,
   objectIdValidation,
+  optionalArrayWithMinimumLength,
+  passwordValidation,
   requiredArrayWithMinimumLength,
   requiredBoolean,
   requiredNumber,
@@ -63,6 +68,29 @@ const joiValidation = {
     "/enable-disable": {
       _id: objectIdValidation("id"),
       status: requiredBoolean(),
+    },
+  },
+  teachers: {
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      name: requiredString(1, Number.MAX_SAFE_INTEGER),
+      email: emailValidation(),
+      phoneNo: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      address: requiredString(1, Number.MAX_SAFE_INTEGER),
+      designation: objectIdValidation("designation id"),
+      department: objectIdValidation("department id"),
+      dateOfBirth: requiredString(1, Number.MAX_SAFE_INTEGER),
+      dateOfJoining: requiredString(1, Number.MAX_SAFE_INTEGER),
+      profilephoto: optionalArrayWithMinimumLength(fileObjectJoiSchema(), 1),
+    },
+    "/update-password": {
+      _id: objectIdValidation("id"),
+      password: passwordValidation(8, 30),
+      confirmPassword: confirmPasswordValidation(8, 30),
     },
   },
 };
