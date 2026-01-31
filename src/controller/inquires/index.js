@@ -9,7 +9,9 @@ import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import {
   apiHTTPResponse,
+  guessedTimezone,
   logMessage,
+  momentTZ,
   parseDateUTC,
 } from "../../utils/globalFunction.js";
 
@@ -144,11 +146,8 @@ export const addRemark = async (req, res) => {
 
 export const followUps = async (req, res) => {
   try {
-    const today = new Date();
-    const followUpDate = `${String(today.getUTCDate()).padStart(2, "0")}-${String(
-      today.getUTCMonth() + 1,
-    ).padStart(2, "0")}-${today.getUTCFullYear()}`;
-    const { start, end } = parseDateUTC(followUpDate);
+    const start = momentTZ.tz(guessedTimezone).startOf("day").toDate();
+    const end = momentTZ.tz(guessedTimezone).endOf("day").toDate();
 
     const query = {
       isDeleted: CONSTANTS.BOOLEAN_FALSE,

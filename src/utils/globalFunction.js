@@ -4,7 +4,7 @@ import geoip from "geoip-lite";
 import moment from "moment-timezone";
 import * as crypto from "crypto";
 
-export const guessedTimezone = moment.tz.guess();
+export const guessedTimezone = "Asia/Kolkata";
 
 export const momentTZ = moment;
 
