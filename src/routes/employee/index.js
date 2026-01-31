@@ -208,6 +208,18 @@ teacherRouter.post(
   controllers.employeeController.updateTeacherPassword,
 );
 
+router.get(
+  "/referral-amount",
+  validationMiddleware("employee", "", false, ["GET"]),
+  controllers.employeeController.getReferralAmountPanel,
+);
+
+router.post(
+  "/referral-amount",
+  validationMiddleware("employee"),
+  controllers.employeeController.updateReferralAmountPanel,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);

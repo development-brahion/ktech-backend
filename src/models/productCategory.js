@@ -7,6 +7,11 @@ const productCategorySchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -92,7 +92,11 @@ const joiValidation = {
       password: passwordValidation(8, 30),
       confirmPassword: confirmPasswordValidation(8, 30),
     },
+    
   },
+  "/referral-amount":{
+      amount:requiredNumber(1,Number.MAX_SAFE_INTEGER)
+    }
 };
 
 export default joiValidation;
