@@ -36,7 +36,6 @@ export const nameStatusController = (
           isDeleted: CONSTANTS.BOOLEAN_FALSE,
         });
 
-
         if (statusCode === CONSTANTS.OK) {
           return apiHTTPResponse(
             req,
@@ -92,7 +91,151 @@ export const nameStatusController = (
 
         req.body.name = name.trim();
 
+        return crudService.update(
+          Model,
+          messages.update || `${entityName} updated successfully`,
+          CONSTANTS.BOOLEAN_TRUE,
+        )(req, res);
+      } catch (error) {
+        logMessage(`Error in update ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
 
+    enableDisable: async (req, res) => {
+      try {
+        return crudService.enableDisable(
+          Model,
+          messages.status || `${entityName} status updated successfully`,
+          CONSTANTS.BOOLEAN_TRUE,
+          entityName,
+          CONSTANTS.BLANK_OBJECT,
+          CONSTANTS.BLANK_OBJECT,
+          "status",
+        )(req, res);
+      } catch (error) {
+        logMessage(`Error in enable/disable ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+
+    softDelete: async (req, res) => {
+      try {
+        return crudService.softDelete(
+          Model,
+          messages.delete || `${entityName} deleted successfully`,
+          CONSTANTS.BOOLEAN_TRUE,
+        )(req, res);
+      } catch (error) {
+        logMessage(`Error in delete ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+
+    allDocs: async (req, res) => {
+      try {
+        return crudService.getALLDocuments(Model, CONSTANTS.BOOLEAN_FALSE)(
+          req,
+          res,
+        );
+      } catch (error) {
+        logMessage(`Error in get all ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+    singleDocument: async (req, res) => {
+      try {
+        return crudService.getById(Model)(req, res);
+      } catch (error) {
+        logMessage(`Error in single document ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+  };
+};
+
+export const crudController = (Model, messages = {}, entityName = "Record") => {
+  return {
+    list: async (req, res) => {
+      try {
+        return crudService.getList(Model, CONSTANTS.BOOLEAN_TRUE)(req, res);
+      } catch (error) {
+        logMessage(`Error in list ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+
+    create: async (req, res) => {
+      try {
+        return crudService.create(
+          Model,
+          messages.create || `${entityName} created successfully`,
+          CONSTANTS.BOOLEAN_TRUE,
+        )(req, res);
+      } catch (error) {
+        logMessage(`Error in create ${entityName}`, error, "error");
+        return apiHTTPResponse(
+          req,
+          res,
+          CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+          CONSTANTS_MSG.SERVER_ERROR,
+          CONSTANTS.DATA_NULL,
+          CONSTANTS.INTERNAL_SERVER_ERROR,
+          CONSTANTS.ERROR_TRUE,
+        );
+      }
+    },
+
+    update: async (req, res) => {
+      try {
         return crudService.update(
           Model,
           messages.update || `${entityName} updated successfully`,

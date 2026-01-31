@@ -7,10 +7,12 @@ const inquirySchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
+      trim: true,
     },
     phoneNo: {
       type: Number,
@@ -28,6 +30,7 @@ const inquirySchema = new Schema(
     },
     remarks: {
       type: String,
+      trim: true,
     },
     source: {
       type: mongoose.Types.ObjectId,
@@ -41,8 +44,23 @@ const inquirySchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    followUpRemarks: [
+      {
+        remarks: {
+          type: String,
+          trim: true,
+        },
+        dateAndTime: {
+          type: Date,
+        },
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Inquiry = mongoose.model("Inquiry", inquirySchema);

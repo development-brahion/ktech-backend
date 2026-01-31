@@ -78,6 +78,54 @@ statusRouter.delete(
   controllers.inquireController.softDeleteStatus,
 );
 
+router.get(
+  "/list",
+  validationMiddleware("", "", true),
+  controllers.inquireController.inquiryList,
+);
+
+router.post(
+  "/create",
+  validationMiddleware("inquires"),
+  controllers.inquireController.createInquiry,
+);
+
+router.post(
+  "/update",
+  validationMiddleware("inquires"),
+  controllers.inquireController.updateInquiry,
+);
+
+router.delete(
+  "/soft-delete",
+  validationMiddleware("", "", true),
+  controllers.inquireController.softDeleteInquiry,
+);
+
+router.post(
+  "/move-to-admission",
+  validationMiddleware("inquires"),
+  controllers.inquireController.moveToAdmission,
+);
+
+router.post(
+  "/add-remark",
+  validationMiddleware("inquires"),
+  controllers.inquireController.addRemark,
+);
+
+router.get(
+  "/single-document",
+  validationMiddleware("", "", true),
+  controllers.inquireController.getInquiryDocument,
+);
+
+router.get(
+  "/follow-up",
+  validationMiddleware(),
+  controllers.inquireController.followUps,
+);
+
 router.use("/source", sourceRouter);
 router.use("/status", statusRouter);
 
