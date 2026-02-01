@@ -68,3 +68,45 @@ export const getStudentEnrolledCoursesWithInstallments = async (req, res) => {
     );
   }
 };
+
+export const getAdmissionsList = async (req, res) => {
+  try {
+    Object.assign(req.body, {
+      searchFields: "name email phoneNo",
+      sortBy: req.body.sortBy || "createdAt",
+      sortOrder: req.body.sortOrder || "desc",
+      select:
+        "name email phoneNo referralCode type rollNo course admissionDate createdAt",
+      populate: "course:courseName",
+    });
+    return crudService.getList(Admission, CONSTANTS.BOOLEAN_TRUE)(req, res);
+  } catch (error) {
+    logMessage("Error in get admission list", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};
+
+export const getAdmissionDetails = async (req, res) => {
+  try {
+    return crudService.getById(Admission)(req, res);
+  } catch (error) {
+    logMessage("Error in get admission details", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};

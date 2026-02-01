@@ -16,4 +16,16 @@ router.get(
   controllers.studentController.getStudentEnrolledCoursesWithInstallments,
 );
 
+router.get(
+  "/admissions",
+  validationMiddleware("students"),
+  controllers.studentController.getAdmissionsList,
+);
+
+router.get(
+  "/admissions/view",
+  validationMiddleware("students"),
+  controllers.studentController.getAdmissionDetails,
+);
+
 export default router;
