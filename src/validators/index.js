@@ -6,6 +6,7 @@ import inquires from "./inquires.js";
 import employee from "./employee.js";
 import student from "./student.js";
 import commerce from "./commerce.js";
+import users from "./users.js";
 
 const moduleValidators = {
   authorization,
@@ -14,7 +15,8 @@ const moduleValidators = {
   inquires,
   employee,
   student,
-  commerce
+  commerce,
+  users,
 };
 
 const validators = {

@@ -7,6 +7,7 @@ import inquireRoutes from "./inquires/index.js";
 import employeeRoutes from "./employee/index.js";
 import studentRoutes from "./student/index.js";
 import commerceRoutes from "./commerce/index.js";
+import userRoutes from "./user/index.js";
 
 const router = Router();
 
@@ -22,5 +23,6 @@ router.use("/inquires", inquireRoutes);
 router.use("/employee", employeeRoutes);
 router.use("/student", studentRoutes);
 router.use("/commerce", commerceRoutes);
+router.use("/users",userRoutes)
 
 export default router;

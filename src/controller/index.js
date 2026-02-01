@@ -6,6 +6,7 @@ import * as inquireController from "./inquires/index.js";
 import * as employeeController from "./employee/index.js";
 import * as studentController from "./student/index.js";
 import * as commerceController from "./commerce/index.js";
+import * as userController from "./user/index.js";
 
 const controllers = {
   authorizationController,
@@ -15,7 +16,8 @@ const controllers = {
   inquireController,
   employeeController,
   studentController,
-  commerceController
+  commerceController,
+  userController,
 };
 
 export default controllers;

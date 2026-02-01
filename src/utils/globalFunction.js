@@ -311,7 +311,7 @@ export function getRefreshTokenExpiry() {
   return Math.floor(accessSec * multiplier);
 }
 
-const generateReferralCode = () => {
+export const generateReferralCode = () => {
   return crypto.randomBytes(6).toString("hex");
 };
 
