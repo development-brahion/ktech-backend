@@ -182,8 +182,12 @@ const admissionSchema = new Schema(
     },
 
     referredBy: String,
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    }
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Admission = mongoose.model("Admission", admissionSchema);

@@ -4,7 +4,7 @@ import website from "./website.js";
 import courses from "./courses.js";
 import inquires from "./inquires.js";
 import employee from "./employee.js";
-import student from "./student.js";
+import students from "./student.js";
 import commerce from "./commerce.js";
 import users from "./users.js";
 
@@ -14,7 +14,7 @@ const moduleValidators = {
   courses,
   inquires,
   employee,
-  student,
+  students,
   commerce,
   users,
 };

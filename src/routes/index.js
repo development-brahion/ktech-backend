@@ -21,7 +21,7 @@ router.use("/website", websiteRoutes);
 router.use("/courses", coursesRoutes);
 router.use("/inquires", inquireRoutes);
 router.use("/employee", employeeRoutes);
-router.use("/student", studentRoutes);
+router.use("/students", studentRoutes);
 router.use("/commerce", commerceRoutes);
 router.use("/users",userRoutes)
 
