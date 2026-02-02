@@ -62,6 +62,14 @@ const examinationSchema = new Schema(
     status: {
       type: Boolean,
     },
+    isDraft: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
