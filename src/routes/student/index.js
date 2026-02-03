@@ -28,4 +28,10 @@ router.get(
   controllers.studentController.getAdmissionDetails,
 );
 
+router.get(
+  "/admissions/all-documents",
+  validationMiddleware("students"),
+  controllers.studentController.getAllAdmissions,
+);
+
 export default router;

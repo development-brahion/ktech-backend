@@ -28,6 +28,17 @@ const joiValidation = {
     select: optionalString(0, Number.MAX_SAFE_INTEGER),
     populate: optionalString(0, Number.MAX_SAFE_INTEGER),
   },
+  "/admissions/all-documents": {
+    keyWord: optionalString(0, 500),
+    sortBy: optionalString(0, 50),
+    sortOrder: optionalEnum(["asc", "desc"]),
+    select: optionalString(0, 10000),
+    searchFields: optionalString(0, 10000),
+    populate: optionalString(0, 10000),
+    query: optionalString(0, 10000),
+    fromDate: dateSchema("From Date"),
+    toDate: dateSchema("To Date"),
+  },
 };
 
 export default joiValidation;

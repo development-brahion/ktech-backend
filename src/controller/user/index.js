@@ -223,7 +223,7 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const { enableDisable: enableDisableUser } = nameStatusController(
+export const { enableDisable: enableDisableUser,allDocs: allUsers } = nameStatusController(
   User,
   {},
   "User",

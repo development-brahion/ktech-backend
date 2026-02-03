@@ -1,9 +1,15 @@
-import { Answer, Examination } from "../../models/index.js";
+import {
+  Admission,
+  Answer,
+  Examination,
+  HallTicket,
+} from "../../models/index.js";
 import { apiHTTPResponse, logMessage } from "../../utils/globalFunction.js";
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import crudService from "../../services/crudService.js";
 import { findOneByQueryLean } from "../../services/serviceGlobal.js";
+import mongoose from "mongoose";
 
 export const getExaminationList = async (req, res) => {
   try {
@@ -184,6 +190,114 @@ export const getExaminationResultDetails = async (req, res) => {
     return crudService.getById(Answer)(req, res);
   } catch (error) {
     logMessage("Error in get examination result details", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getHallTicketList = async (req, res) => {
+  try {
+    Object.assign(req.body, {
+      select: "_id user_id examination_id admission_id createdAt",
+      populate:
+        "user_id:name,email,rollNo|examination_id:examtitle,examduration|admission_id:fatherName,motherName,course,batch|admission_id.course:courseName|admission_id.batch:startTime,endTime",
+    });
+    return crudService.getList(HallTicket, CONSTANTS.BOOLEAN_FALSE)(req, res);
+  } catch (error) {
+    logMessage("Error in get hall ticket list", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const addHallTicket = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { user_id, examination_id, admission_id } = req.body;
+
+    const hallTicket = await HallTicket.create(
+      [
+        {
+          user_id,
+          examination_id,
+          admission_id,
+        },
+      ],
+      { session },
+    );
+
+    const updatedAdmission = await Admission.findByIdAndUpdate(
+      admission_id,
+      {
+        hallTicket: hallTicket[0]._id,
+      },
+      { new: true, session },
+    );
+
+    if (!updatedAdmission) {
+      await session.abortTransaction();
+      session.endSession();
+
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Admission not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Hall ticket generated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    logMessage("Error in add hall ticket", error, "error");
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getAllExaminations = async (req, res) => {
+  try {
+    return crudService.getALLDocuments(Examination, CONSTANTS.BOOLEAN_FALSE)(
+      req,
+      res,
+    );
+  } catch (error) {
+    logMessage("Error in get all examinations", error, "error");
     return apiHTTPResponse(
       req,
       res,

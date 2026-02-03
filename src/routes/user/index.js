@@ -34,4 +34,10 @@ router.post(
   controllers.userController.updatePassword,
 );
 
+router.get(
+  "/all-documents",
+  validationMiddleware("", "", true),
+  controllers.userController.allUsers,
+);
+
 export default router;

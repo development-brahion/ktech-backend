@@ -63,4 +63,22 @@ router.get(
   controller.examinationController.getExaminationResultDetails,
 );
 
+router.get(
+  "/hallticket/list",
+  validationMiddleware("examinations"),
+  controller.examinationController.getHallTicketList,
+);
+
+router.post(
+  "/hallticket/add",
+  validationMiddleware("examinations"),
+  controller.examinationController.addHallTicket,
+);
+
+router.get(
+  "/all-documents",
+  validationMiddleware("", "", true),
+  controller.examinationController.getAllExaminations,
+);
+
 export default router;

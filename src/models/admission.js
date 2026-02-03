@@ -107,7 +107,7 @@ const admissionSchema = new Schema(
 
     batch: {
       type: mongoose.Types.ObjectId,
-      ref: "CoursePlans",
+      ref: "Batch",
     },
 
     installments: [
