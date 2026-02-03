@@ -220,6 +220,18 @@ router.post(
   controllers.employeeController.updateReferralAmountPanel,
 );
 
+teacherRouter.post(
+  "/assign-role",
+  validationMiddleware("employee","teachers"),
+  controllers.employeeController.assignRoleToTeacher,
+);
+
+teacherRouter.post(
+  "/assign-goal",
+  validationMiddleware("employee","teachers"),
+  controllers.employeeController.assignGoalToTeacher,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);

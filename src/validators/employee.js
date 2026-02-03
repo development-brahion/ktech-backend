@@ -92,11 +92,18 @@ const joiValidation = {
       password: passwordValidation(8, 30),
       confirmPassword: confirmPasswordValidation(8, 30),
     },
-    
+    "/assign-role": {
+      teacherId: objectIdValidation("teacher id"),
+      roleId: objectIdValidation("role id"),
+    },
+    "/assign-goal": {
+      teacherId: objectIdValidation("teacher id"),
+      goalId: objectIdValidation("goal id"),
+    },
   },
-  "/referral-amount":{
-      amount:requiredNumber(1,Number.MAX_SAFE_INTEGER)
-    }
+  "/referral-amount": {
+    amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  },
 };
 
 export default joiValidation;
