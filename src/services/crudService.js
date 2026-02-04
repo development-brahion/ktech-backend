@@ -91,6 +91,7 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       isReturnId = false,
+      isFromCrud = true
     ) =>
     async (req, res) => {
       try {
@@ -99,7 +100,7 @@ const globalCrudService = {
           model,
           _id,
           { ...rest, updatedAt: Date.now() },
-          CONSTANTS.BOOLEAN_TRUE,
+          isFromCrud,
         );
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(

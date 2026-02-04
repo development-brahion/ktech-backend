@@ -22,7 +22,6 @@ import {
   updateAndCreateDocumentByQueryAndData,
 } from "../../services/serviceGlobal.js";
 import mongoose from "mongoose";
-import { populate } from "dotenv";
 
 const departmentMessages = {
   create: "Department created successfully",

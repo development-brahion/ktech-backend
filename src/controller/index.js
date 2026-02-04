@@ -8,6 +8,7 @@ import * as studentController from "./student/index.js";
 import * as commerceController from "./commerce/index.js";
 import * as userController from "./user/index.js";
 import * as examinationController from "./examinations/index.js";
+import * as requestController from "./requests/index.js";
 
 const controllers = {
   authorizationController,
@@ -20,6 +21,7 @@ const controllers = {
   commerceController,
   userController,
   examinationController,
+  requestController,
 };
 
 export default controllers;
