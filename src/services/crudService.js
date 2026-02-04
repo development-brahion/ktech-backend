@@ -345,6 +345,7 @@ const globalCrudService = {
         populate: buildPopulateFields(req.body.populate),
       };
 
+
       const result = await getListDocuments(
         model,
         options,

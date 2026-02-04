@@ -23,6 +23,10 @@ const taskSchema = new Schema({
       enum: ['Pending', 'In-Progress', 'Completed']
     },
   }],
+  isDeleted: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 const Task = mongoose.model("Task", taskSchema);

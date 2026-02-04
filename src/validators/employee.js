@@ -100,6 +100,15 @@ const joiValidation = {
       teacherId: objectIdValidation("teacher id"),
       goalId: objectIdValidation("goal id"),
     },
+    "/assign-task": {
+      teacherId: objectIdValidation("teacher id"),
+      title: requiredString(1, Number.MAX_SAFE_INTEGER),
+      description: requiredString(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/tasks": {
+      page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    },
   },
   "/referral-amount": {
     amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),

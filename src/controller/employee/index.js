@@ -5,6 +5,7 @@ import {
   LeaveType,
   ReferralAmount,
   Role,
+  Task,
   User,
 } from "../../models/index.js";
 import {
@@ -21,6 +22,7 @@ import {
   updateAndCreateDocumentByQueryAndData,
 } from "../../services/serviceGlobal.js";
 import mongoose from "mongoose";
+import { populate } from "dotenv";
 
 const departmentMessages = {
   create: "Department created successfully",
@@ -524,6 +526,86 @@ export const assignRoleToTeacher = async (req, res) => {
 
     logMessage("Error in assignRoleToTeacher controller", error, "error");
 
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const assignTaskToTeacher = async (req, res) => {
+  try {
+    const { teacherId, title, description } = req.body;
+
+    const user = await User.findOne({ _id: teacherId });
+
+    if (!user) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "User not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    const task = new Task({
+      title,
+      description,
+      assignTo: [
+        {
+          user: teacherId,
+          assignDate: new Date(),
+          status: "Pending",
+        },
+      ],
+    });
+
+    await task.save();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Task assigned to teacher successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in assignTaskToTeacher controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getTaskList = async (req, res) => {
+  try {
+    Object.assign(req.body, {
+      select:
+        "title description assignTo.status assignTo.user assignTo.assignDate updatedAt",
+      sortBy: "updatedAt",
+      sortOrder: "desc",
+      populate: [
+        {
+          path: "assignTo.user",
+          select: "name email role",
+        },
+      ],
+    });
+    return crudService.getList(Task, CONSTANTS.BOOLEAN_TRUE)(req, res);
+  } catch (error) {
+    logMessage("Error in getTaskList controller", error, "error");
     return apiHTTPResponse(
       req,
       res,

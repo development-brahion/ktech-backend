@@ -222,14 +222,26 @@ router.post(
 
 teacherRouter.post(
   "/assign-role",
-  validationMiddleware("employee","teachers"),
+  validationMiddleware("employee", "teachers"),
   controllers.employeeController.assignRoleToTeacher,
 );
 
 teacherRouter.post(
   "/assign-goal",
-  validationMiddleware("employee","teachers"),
+  validationMiddleware("employee", "teachers"),
   controllers.employeeController.assignGoalToTeacher,
+);
+
+teacherRouter.post(
+  "/assign-task",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.assignTaskToTeacher,
+);
+
+teacherRouter.get(
+  "/tasks",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.getTaskList,
 );
 
 router.use("/departments", departmentRouter);
