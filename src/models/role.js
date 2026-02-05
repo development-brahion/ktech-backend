@@ -36,6 +36,7 @@ const roleSchema = new Schema({
       status: {
         type: String,
         enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending",
       },
     },
   ],
