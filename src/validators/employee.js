@@ -7,6 +7,7 @@ import {
   passwordValidation,
   requiredArrayWithMinimumLength,
   requiredBoolean,
+  requiredEnum,
   requiredNumber,
   requiredString,
 } from "../utils/joiValidationDataType.js";
@@ -108,6 +109,10 @@ const joiValidation = {
     "/tasks": {
       page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
       size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/update-task": {
+      _id: objectIdValidation("task id"),
+      status: requiredEnum(["Pending", "In-Progress", "Completed"]),
     },
   },
   "/referral-amount": {

@@ -160,9 +160,19 @@ export const updateExamination = async (req, res) => {
 
 export const getExaminationResultList = async (req, res) => {
   try {
+    const baseQuery = req.body.query
+      ? typeof req.body.query === "string"
+        ? JSON.parse(req.body.query)
+        : req.body.query
+      : {};
+
+    if (["Teacher", "Principal"].includes(req.user.role)) {
+      baseQuery.userId = req.user.id;
+    }
     Object.assign(req.body, {
       select: "userId examination result marks type createdAt",
       populate: "userId:name,email,role|examination:examtitle",
+      // query: baseQuery,
     });
 
     return crudService.getList(Answer, CONSTANTS.BOOLEAN_FALSE)(req, res);

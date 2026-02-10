@@ -590,6 +590,15 @@ export const assignTaskToTeacher = async (req, res) => {
 
 export const getTaskList = async (req, res) => {
   try {
+    const baseQuery = req.body.query
+      ? typeof req.body.query === "string"
+        ? JSON.parse(req.body.query)
+        : req.body.query
+      : {};
+
+    if (req.user.role === "Teacher") {
+      baseQuery["assignTo.user"] = new mongoose.Types.ObjectId(req.user.id);
+    }
     Object.assign(req.body, {
       select:
         "title description assignTo.status assignTo.user assignTo.assignDate updatedAt",
@@ -601,10 +610,61 @@ export const getTaskList = async (req, res) => {
           select: "name email role",
         },
       ],
+      query: baseQuery,
     });
     return crudService.getList(Task, CONSTANTS.BOOLEAN_TRUE)(req, res);
   } catch (error) {
     logMessage("Error in getTaskList controller", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const updateTaskStatus = async (req, res) => {
+  try {
+    const { _id, status } = req.body;
+    const { id } = req.user;
+
+    const updatedData = await Task.findOneAndUpdate(
+      {
+        _id: new mongoose.Types.ObjectId(_id),
+        "assignTo.user": new mongoose.Types.ObjectId(id),
+      },
+      {
+        $set: {
+          "assignTo.$.status": status,
+        },
+      },
+      { new: true },
+    );
+
+    if (!updatedData) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Record not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Status updated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in updateTaskStatus", error, "error");
     return apiHTTPResponse(
       req,
       res,

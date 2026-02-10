@@ -244,6 +244,12 @@ teacherRouter.get(
   controllers.employeeController.getTaskList,
 );
 
+teacherRouter.post(
+  "/update-task",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.updateTaskStatus,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);

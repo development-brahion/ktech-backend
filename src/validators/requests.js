@@ -3,6 +3,7 @@ import {
   optionalString,
   requiredEnum,
   requiredNumber,
+  requiredString,
 } from "../utils/joiValidationDataType.js";
 
 const joiValidation = {
@@ -11,6 +12,13 @@ const joiValidation = {
       _id: objectIdValidation("id"),
       leaveStatus: requiredEnum(["Pending", "Approved", "Rejected"]),
       remarks: optionalString(0, Number.MAX_SAFE_INTEGER),
+    },
+    "/apply": {
+      applyDate: requiredString(1, Number.MAX_SAFE_INTEGER),
+      startDate: requiredString(1, Number.MAX_SAFE_INTEGER),
+      endDate: requiredString(1, Number.MAX_SAFE_INTEGER),
+      leaveType: objectIdValidation("leave type id"),
+      reason: requiredString(1, Number.MAX_SAFE_INTEGER),
     },
   },
   roles: {
@@ -24,6 +32,10 @@ const joiValidation = {
       teacherId: objectIdValidation("teacher id"),
       status: requiredEnum(["Approved", "Rejected"]),
     },
+    "/assigned": {
+      page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    },
   },
   goals: {
     "/list": {
@@ -35,6 +47,10 @@ const joiValidation = {
       _id: objectIdValidation("id"),
       teacherId: objectIdValidation("teacher id"),
       status: requiredEnum(["Approved", "Rejected"]),
+    },
+    "/assigned": {
+      page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
     },
   },
 };
