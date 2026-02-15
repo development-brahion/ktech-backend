@@ -1,10 +1,80 @@
 import {
   dateSchema,
+  emailValidation,
   objectIdValidation,
+  optionalArrayWithMinimumLength,
   optionalEnum,
+  optionalNumber,
   optionalString,
+  passwordValidation,
+  requiredEnum,
   requiredNumber,
+  requiredObject,
+  requiredString,
 } from "../utils/joiValidationDataType.js";
+
+const installmentSchema = requiredObject({
+  name: requiredString(1, Number.MAX_SAFE_INTEGER),
+  amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  date: requiredString(1, Number.MAX_SAFE_INTEGER),
+  paymentStatus: requiredEnum(["Pending", "Paid"]),
+  receiptNumber: optionalString(0, Number.MAX_SAFE_INTEGER),
+  paymentmode: optionalEnum(["Cash", "Cheque"]),
+  transctionId: optionalString(0, Number.MAX_SAFE_INTEGER),
+});
+
+const createAdmissionValidation = {
+  name: requiredString(1, Number.MAX_SAFE_INTEGER),
+  surname: optionalString(0, Number.MAX_SAFE_INTEGER),
+  email: emailValidation(),
+  loginEmail: emailValidation(),
+  loginPassword: passwordValidation(8, 30),
+  phoneNo: requiredNumber(0, Number.MAX_SAFE_INTEGER),
+  aadharNo: optionalString(0, Number.MAX_SAFE_INTEGER),
+  address: optionalString(0, Number.MAX_SAFE_INTEGER),
+  addressProof: optionalString(0, Number.MAX_SAFE_INTEGER),
+  course: objectIdValidation("course"),
+  admissionSource: objectIdValidation("admission source"),
+  batch: objectIdValidation("batch"),
+  plan: objectIdValidation("plan"),
+  admissionSession: optionalString(0, Number.MAX_SAFE_INTEGER),
+  courseDuration: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  category: optionalEnum(["General", "OBC", "SC", "ST"]),
+  religion: optionalEnum(["Hindu", "Sikh", "Christian", "Muslim", "Other"]),
+  qualification: optionalString(0, Number.MAX_SAFE_INTEGER),
+  bloodGroup: optionalEnum([
+    "A+",
+    "A-",
+    "B+",
+    "B-",
+    "AB+",
+    "AB-",
+    "O+",
+    "O-",
+    "Other",
+  ]),
+  fatherName: optionalString(0, Number.MAX_SAFE_INTEGER),
+  motherName: optionalString(0, Number.MAX_SAFE_INTEGER),
+  fatherOccupation: optionalString(0, Number.MAX_SAFE_INTEGER),
+  fatherPhoneNo: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  motherPhoneNo: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  dateOfBirth: optionalString(0, Number.MAX_SAFE_INTEGER),
+  gender: optionalEnum(["Male", "Female", "Other"]),
+  fee: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  discountRate: optionalEnum(["Amount", "Percent"]),
+  discountAmount: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  totalFees: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  feesReceived: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  balance: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  remarks: optionalString(0, Number.MAX_SAFE_INTEGER),
+  examType: optionalEnum(["Online", "Offline"]),
+  certistatus: optionalEnum(["Pending", "Approved", "Rejected"]),
+  hallticketstatus: optionalEnum(["Pending", "Approved", "Rejected"]),
+  referredBy: optionalString(0, Number.MAX_SAFE_INTEGER),
+  installments: optionalArrayWithMinimumLength(installmentSchema),
+  incentive: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+  teacherid: objectIdValidation("teacher id"),
+};
 
 const joiValidation = {
   "/course-installments": {
@@ -39,6 +109,7 @@ const joiValidation = {
     fromDate: dateSchema("From Date"),
     toDate: dateSchema("To Date"),
   },
+  "/create-new-admission": createAdmissionValidation,
 };
 
 export default joiValidation;

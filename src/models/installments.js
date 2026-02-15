@@ -38,7 +38,6 @@ const installmentsSchema = new Schema(
     },
     receiptNumber: {
       type: String,
-      unique: true,
       sparse: true,
     },
     paymentmode: {
@@ -47,7 +46,6 @@ const installmentsSchema = new Schema(
     },
     transctionId: {
       type: String,
-      unique: true,
       sparse: true,
     },
   },

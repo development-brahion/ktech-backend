@@ -34,4 +34,10 @@ router.get(
   controllers.studentController.getAllAdmissions,
 );
 
+router.post(
+  "/create-new-admission",
+  validationMiddleware("students"),
+  controllers.studentController.createAdmission,
+);
+
 export default router;
