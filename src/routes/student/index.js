@@ -40,4 +40,16 @@ router.post(
   controllers.studentController.createAdmission,
 );
 
+router.post(
+  "/update-admission",
+  validationMiddleware("students"),
+  controllers.studentController.updateAdmission,
+);
+
+router.post(
+  "/re-admission",
+  validationMiddleware("students"),
+  controllers.studentController.reAdmitStudent,
+);
+
 export default router;

@@ -1,10 +1,12 @@
 import {
   dateSchema,
   emailValidation,
+  fileObjectJoiSchema,
   objectIdValidation,
   optionalArrayWithMinimumLength,
   optionalEnum,
   optionalNumber,
+  optionalObjectId,
   optionalString,
   passwordValidation,
   requiredEnum,
@@ -14,6 +16,7 @@ import {
 } from "../utils/joiValidationDataType.js";
 
 const installmentSchema = requiredObject({
+  _id: optionalObjectId("installment id"),
   name: requiredString(1, Number.MAX_SAFE_INTEGER),
   amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),
   date: requiredString(1, Number.MAX_SAFE_INTEGER),
@@ -74,6 +77,9 @@ const createAdmissionValidation = {
   installments: optionalArrayWithMinimumLength(installmentSchema),
   incentive: optionalNumber(0, Number.MAX_SAFE_INTEGER),
   teacherid: objectIdValidation("teacher id"),
+  userImage: optionalArrayWithMinimumLength(fileObjectJoiSchema()),
+  signature: optionalArrayWithMinimumLength(fileObjectJoiSchema()),
+  admissionDate: optionalString(0, Number.MAX_SAFE_INTEGER),
 };
 
 const joiValidation = {
@@ -110,6 +116,28 @@ const joiValidation = {
     toDate: dateSchema("To Date"),
   },
   "/create-new-admission": createAdmissionValidation,
+  "/update-admission": {
+    _id: objectIdValidation("admission id"),
+    ...createAdmissionValidation,
+  },
+  "/re-admission": {
+    userId: objectIdValidation("user id"),
+    examType: optionalEnum(["Online", "Offline"]),
+    batch: objectIdValidation("batch"),
+    course: objectIdValidation("course"),
+    plan: objectIdValidation("plan"),
+    incentive: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    teacherid: objectIdValidation("teacher id"),
+    courseDuration: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    fee: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    discountRate: optionalEnum(["Amount", "Percent"]),
+    discountAmount: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    totalFees: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    feesReceived: optionalNumber(0, Number.MAX_SAFE_INTEGER),
+    remarks: optionalString(0, Number.MAX_SAFE_INTEGER),
+    installments: optionalArrayWithMinimumLength(installmentSchema),
+    admissionDate: optionalString(0, Number.MAX_SAFE_INTEGER),
+  },
 };
 
 export default joiValidation;
