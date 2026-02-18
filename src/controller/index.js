@@ -9,6 +9,7 @@ import * as commerceController from "./commerce/index.js";
 import * as userController from "./user/index.js";
 import * as examinationController from "./examinations/index.js";
 import * as requestController from "./requests/index.js";
+import * as attendanceController from "./attendance/index.js";
 
 const controllers = {
   authorizationController,
@@ -22,6 +23,7 @@ const controllers = {
   userController,
   examinationController,
   requestController,
+  attendanceController,
 };
 
 export default controllers;

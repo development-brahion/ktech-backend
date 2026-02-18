@@ -352,3 +352,14 @@ export const parseDateUTC = (dateStr) => {
     end: new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)),
   };
 };
+
+export const parseStartDate = (dateStr) => {
+  const [d, m, y] = dateStr.split("-");
+  return new Date(`${y}-${m}-${d}T00:00:00.000Z`);
+};
+
+export const parseEndDate = (dateStr) => {
+  const [d, m, y] = dateStr.split("-");
+  return new Date(`${y}-${m}-${d}T23:59:59.999Z`);
+};
+

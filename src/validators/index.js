@@ -9,6 +9,7 @@ import commerce from "./commerce.js";
 import users from "./users.js";
 import examinations from "./examinations.js";
 import requests from "./requests.js";
+import attendances from "./attendance.js";
 
 const moduleValidators = {
   authorization,
@@ -21,6 +22,7 @@ const moduleValidators = {
   users,
   examinations,
   requests,
+  attendances,
 };
 
 const validators = {

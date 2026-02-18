@@ -10,6 +10,7 @@ import commerceRoutes from "./commerce/index.js";
 import userRoutes from "./user/index.js";
 import examinationRoutes from "./examinations/index.js";
 import requestRoutes from "./requests/index.js";
+import attendanceRoutes from "./attendance/index.js";
 
 const router = Router();
 
@@ -28,5 +29,6 @@ router.use("/commerce", commerceRoutes);
 router.use("/users", userRoutes);
 router.use("/examinations", examinationRoutes);
 router.use("/requests", requestRoutes);
+router.use("/attendances", attendanceRoutes);
 
 export default router;

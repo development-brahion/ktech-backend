@@ -91,7 +91,7 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       isReturnId = false,
-      isFromCrud = true
+      isFromCrud = true,
     ) =>
     async (req, res) => {
       try {
@@ -345,7 +345,6 @@ const globalCrudService = {
         toDate: req.body.toDate || "",
         populate: buildPopulateFields(req.body.populate),
       };
-
 
       const result = await getListDocuments(
         model,
