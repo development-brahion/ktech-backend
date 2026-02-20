@@ -1,5 +1,6 @@
 import {
   confirmPasswordValidation,
+  dateSchema,
   emailValidation,
   fileObjectJoiSchema,
   objectIdValidation,
@@ -113,6 +114,12 @@ const joiValidation = {
     "/update-task": {
       _id: objectIdValidation("task id"),
       status: requiredEnum(["Pending", "In-Progress", "Completed"]),
+    },
+    "/my-incentives": {
+      page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      fromDate: dateSchema("From Date"),
+      toDate: dateSchema("To Date"),
     },
   },
   "/referral-amount": {

@@ -17,6 +17,12 @@ router.post(
 );
 
 router.get(
+  "/teachers/my-attendances",
+  validationMiddleware("attendances", "teachers"),
+  controllers.attendanceController.teacherMyAttendances,
+);
+
+router.get(
   "/students/view",
   validationMiddleware("attendances", "students"),
   controllers.attendanceController.studentAttendanceViewInRange,
@@ -26,6 +32,12 @@ router.post(
   "/students/mark-attendance",
   validationMiddleware("attendances", "students"),
   controllers.attendanceController.markStudentAttendance,
+);
+
+router.get(
+  "/list",
+  validationMiddleware("attendances"),
+  controllers.attendanceController.attendanceListByRole,
 );
 
 export default router;

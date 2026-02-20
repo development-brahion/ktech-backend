@@ -1,8 +1,11 @@
 import {
+  dateSchema,
   dateSchemaRequired,
   defaultDateSchema,
   objectIdValidation,
+  optionalObjectId,
   requiredEnum,
+  requiredNumber,
 } from "../utils/joiValidationDataType.js";
 
 const joiValidation = {
@@ -16,6 +19,12 @@ const joiValidation = {
       teacherId: objectIdValidation("teacher id"),
       status: requiredEnum(["Present", "Absent", "Leave"]),
       date: defaultDateSchema("Date"),
+    },
+    "/teachers/my-attendances": {
+      page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      fromDate: dateSchema("From Date"),
+      toDate: dateSchema("To Date"),
     },
   },
   students: {
@@ -31,6 +40,15 @@ const joiValidation = {
       status: requiredEnum(["Present", "Absent", "Leave"]),
       date: defaultDateSchema("Date"),
     },
+  },
+  "/list": {
+    page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    fromDate: dateSchema("From Date"),
+    toDate: dateSchema("To Date"),
+    type: requiredEnum(["Student", "Teacher"]),
+    userId: optionalObjectId("user id"),
+    courseId: optionalObjectId("course id"),
   },
 };
 

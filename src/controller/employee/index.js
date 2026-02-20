@@ -1,4 +1,5 @@
 import {
+  Admission,
   Department,
   Designation,
   Goal,
@@ -12,6 +13,8 @@ import {
   apiHTTPResponse,
   hashAndEncryptPassword,
   logMessage,
+  parseEndDate,
+  parseStartDate,
 } from "../../utils/globalFunction.js";
 import { nameStatusController } from "../common.js";
 import * as CONSTANTS from "../../utils/constants.js";
@@ -665,6 +668,117 @@ export const updateTaskStatus = async (req, res) => {
     );
   } catch (error) {
     logMessage("Error in updateTaskStatus", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const myIncentives = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { page = 1, size = 10, fromDate, toDate } = req.body;
+
+    const skip = (page - 1) * size;
+
+    const match = {
+      teacherid: new mongoose.Types.ObjectId(id),
+      isDeleted: false,
+    };
+
+    if (fromDate || toDate) {
+      match.admissionDate = {};
+
+      if (fromDate) {
+        match.admissionDate.$gte = parseStartDate(fromDate);
+      }
+
+      if (toDate) {
+        match.admissionDate.$lte = parseEndDate(toDate);
+      }
+    }
+
+    const pipeline = [
+      { $match: match },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                courseName: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $facet: {
+          totalIncentive: [
+            {
+              $group: {
+                _id: null,
+                total: { $sum: "$incentive" },
+              },
+            },
+          ],
+          list: [
+            { $sort: { admissionDate: -1 } },
+            { $skip: skip },
+            { $limit: Number(size) },
+
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                course: 1,
+                admissionDate: 1,
+                incentive: 1,
+              },
+            },
+          ],
+
+          total: [{ $count: "count" }],
+        },
+      },
+
+      {
+        $project: {
+          list: 1,
+          total: {
+            $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0],
+          },
+          totalIncentive: {
+            $ifNull: [{ $arrayElemAt: ["$totalIncentive.total", 0] }, 0],
+          },
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(
+      Admission,
+      pipeline,
+      CONSTANTS.BOOLEAN_TRUE,
+    )(req, res);
+  } catch (error) {
+    logMessage("Error in myIncentives", error, "error");
     return apiHTTPResponse(
       req,
       res,

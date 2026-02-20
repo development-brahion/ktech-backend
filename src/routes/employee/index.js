@@ -250,6 +250,12 @@ teacherRouter.post(
   controllers.employeeController.updateTaskStatus,
 );
 
+teacherRouter.get(
+  "/my-incentives",
+  validationMiddleware("employee", "teachers"),
+  controllers.employeeController.myIncentives,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);

@@ -263,3 +263,276 @@ export const markStudentAttendance = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+export const teacherMyAttendances = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { page = 1, size = 10, fromDate, toDate } = req.body;
+
+    const skip = (page - 1) * size;
+
+    const match = {
+      user: new mongoose.Types.ObjectId(id),
+    };
+
+    if (fromDate || toDate) {
+      match.date = {};
+
+      if (fromDate) {
+        match.date.$gte = parseStartDate(fromDate);
+      }
+
+      if (toDate) {
+        match.date.$lte = parseEndDate(toDate);
+      }
+    }
+
+    const pipeline = [
+      { $match: match },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: "$user" },
+
+      {
+        $facet: {
+          summary: [
+            {
+              $group: {
+                _id: null,
+                totalPresent: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Present"] }, 1, 0],
+                  },
+                },
+                totalAbsent: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Absent"] }, 1, 0],
+                  },
+                },
+                totalLeave: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Leave"] }, 1, 0],
+                  },
+                },
+                total: { $sum: 1 },
+              },
+            },
+          ],
+          list: [
+            { $sort: { date: -1 } },
+            { $skip: skip },
+            { $limit: Number(size) },
+
+            {
+              $project: {
+                _id: 1,
+                date: 1,
+                status: 1,
+                user: 1,
+              },
+            },
+          ],
+
+          total: [{ $count: "count" }],
+        },
+      },
+
+      {
+        $project: {
+          list: 1,
+
+          total: {
+            $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0],
+          },
+
+          totalPresent: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalPresent", 0] }, 0],
+          },
+
+          totalAbsent: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalAbsent", 0] }, 0],
+          },
+
+          totalLeave: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalLeave", 0] }, 0],
+          },
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(
+      Attendance,
+      pipeline,
+      CONSTANTS.BOOLEAN_TRUE,
+    )(req, res);
+  } catch (error) {
+    logMessage("Error in teacherMyAttendance", error, req, res);
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.FAILED_MSG,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const attendanceListByRole = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      size = 10,
+      fromDate,
+      toDate,
+      type,
+      userId,
+      courseId,
+    } = req.body;
+
+    const skip = (page - 1) * size;
+
+    const match = {};
+
+    if (fromDate || toDate) {
+      match.date = {};
+      if (fromDate) match.date.$gte = parseStartDate(fromDate);
+      if (toDate) match.date.$lte = parseEndDate(toDate);
+    }
+
+    if (userId) {
+      match.user = new mongoose.Types.ObjectId(userId);
+    }
+
+    if (courseId) {
+      match.course = new mongoose.Types.ObjectId(courseId);
+    }
+
+    const pipeline = [
+      { $match: match },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [
+            ...(type ? [{ $match: { role: type } }] : []),
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                role: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: "$user" },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+          pipeline: [{ $project: { _id: 1, courseName: 1 } }],
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $lookup: {
+          from: "batches",
+          localField: "batch",
+          foreignField: "_id",
+          as: "batch",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                startTime: 1,
+                endTime: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$batch",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $facet: {
+          list: [
+            { $sort: { date: -1 } },
+            { $skip: skip },
+            { $limit: Number(size) },
+
+            {
+              $project: {
+                _id: 1,
+                date: 1,
+                status: 1,
+                user: 1,
+                course: 1,
+                batch: 1,
+              },
+            },
+          ],
+
+          total: [{ $count: "count" }],
+        },
+      },
+
+      {
+        $project: {
+          list: 1,
+          total: {
+            $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0],
+          },
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(
+      Attendance,
+      pipeline,
+      CONSTANTS.BOOLEAN_TRUE,
+    )(req, res);
+  } catch (err) {
+    logMessage("Error in attendanceListByRole", err, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.FAILED_MSG,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
