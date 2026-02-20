@@ -586,3 +586,103 @@ export const assignedGoalList = async (req, res) => {
     );
   }
 };
+
+export const requestRoleExamApproval = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    const teacherId = req.user.id;
+
+    const updatedData = await Role.findOneAndUpdate(
+      {
+        _id: new mongoose.Types.ObjectId(_id),
+        "assignTo.user": new mongoose.Types.ObjectId(teacherId),
+      },
+      {
+        $set: {
+          "assignTo.$.status": "Pending",
+        },
+      },
+      { new: true },
+    );
+
+    if (!updatedData) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Record not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Approval requested successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in requestRoleExamApproval", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const requestGoalExamApproval = async (req, res) => {
+  try {
+    const { _id } = req.body;
+    const teacherId = req.user.id;
+
+    const updatedData = await Goal.findOneAndUpdate(
+      {
+        _id: new mongoose.Types.ObjectId(_id),
+        "assignTo.user": new mongoose.Types.ObjectId(teacherId),
+      },
+      {
+        $set: {
+          "assignTo.$.status": "Pending",
+        },
+      },
+      { new: true },
+    );
+
+    if (!updatedData) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Goal assignment not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Goal approval requested successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in requestGoalExamApproval", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};

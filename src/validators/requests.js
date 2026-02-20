@@ -36,6 +36,9 @@ const joiValidation = {
       page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
       size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
     },
+    "/request-approval": {
+      _id: objectIdValidation("id"),
+    },
   },
   goals: {
     "/list": {
@@ -51,6 +54,9 @@ const joiValidation = {
     "/assigned": {
       page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
       size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    },
+    "/request-approval": {
+      _id: objectIdValidation("id"),
     },
   },
 };

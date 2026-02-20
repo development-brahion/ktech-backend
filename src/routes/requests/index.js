@@ -61,6 +61,18 @@ goalRouter.get(
   controllers.requestController.assignedGoalList,
 );
 
+roleRouter.post(
+  "/request-approval",
+  validationMiddleware("requests", "roles"),
+  controllers.requestController.requestRoleExamApproval,
+);
+
+goalRouter.post(
+  "/request-approval",
+  validationMiddleware("requests", "goals"),
+  controllers.requestController.requestGoalExamApproval,
+);
+
 router.use("/leaves", leaveRouter);
 router.use("/roles", roleRouter);
 router.use("/goals", goalRouter);

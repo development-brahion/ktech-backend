@@ -91,8 +91,8 @@ export const getAdmissionsList = async (req, res) => {
       sortBy: req.body.sortBy || "createdAt",
       sortOrder: req.body.sortOrder || "desc",
       select:
-        "name email phoneNo referralCode type rollNo course admissionDate createdAt",
-      populate: "course:courseName",
+        "name email phoneNo type rollNo course admissionDate createdAt user",
+      populate: "course:courseName|user:referralCode",
     });
     return crudService.getList(Admission, CONSTANTS.BOOLEAN_TRUE)(req, res);
   } catch (error) {
