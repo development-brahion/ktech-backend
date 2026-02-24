@@ -395,6 +395,8 @@ export const teacherMyAttendances = async (req, res) => {
 
 export const attendanceListByRole = async (req, res) => {
   try {
+    const { id, role } = req.user;
+
     const {
       page = 1,
       size = 10,
@@ -405,27 +407,36 @@ export const attendanceListByRole = async (req, res) => {
       courseId,
     } = req.body;
 
-    const skip = (page - 1) * size;
+    const skip = (Number(page) - 1) * Number(size);
 
     const match = {};
 
+    /* ================= DATE FILTER ================= */
     if (fromDate || toDate) {
       match.date = {};
       if (fromDate) match.date.$gte = parseStartDate(fromDate);
       if (toDate) match.date.$lte = parseEndDate(toDate);
     }
 
+    /* ================= USER FILTER ================= */
     if (userId) {
       match.user = new mongoose.Types.ObjectId(userId);
     }
 
+    /* ================= COURSE FILTER ================= */
     if (courseId) {
       match.course = new mongoose.Types.ObjectId(courseId);
+    }
+
+    /* ================= SELF ACCESS RULE ================= */
+    if (["Student", "Teacher"].includes(role)) {
+      match.user = new mongoose.Types.ObjectId(id);
     }
 
     const pipeline = [
       { $match: match },
 
+      /* ================= USER LOOKUP ================= */
       {
         $lookup: {
           from: "users",
@@ -446,6 +457,7 @@ export const attendanceListByRole = async (req, res) => {
       },
       { $unwind: "$user" },
 
+      /* ================= COURSE LOOKUP ================= */
       {
         $lookup: {
           from: "courses",
@@ -462,6 +474,7 @@ export const attendanceListByRole = async (req, res) => {
         },
       },
 
+      /* ================= BATCH LOOKUP ================= */
       {
         $lookup: {
           from: "batches",
@@ -486,8 +499,33 @@ export const attendanceListByRole = async (req, res) => {
         },
       },
 
+      /* ================= FACET ================= */
       {
         $facet: {
+          summary: [
+            {
+              $group: {
+                _id: null,
+                totalPresent: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Present"] }, 1, 0],
+                  },
+                },
+                totalAbsent: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Absent"] }, 1, 0],
+                  },
+                },
+                totalLeave: {
+                  $sum: {
+                    $cond: [{ $eq: ["$status", "Leave"] }, 1, 0],
+                  },
+                },
+                total: { $sum: 1 },
+              },
+            },
+          ],
+
           list: [
             { $sort: { date: -1 } },
             { $skip: skip },
@@ -512,8 +550,21 @@ export const attendanceListByRole = async (req, res) => {
       {
         $project: {
           list: 1,
+
           total: {
             $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0],
+          },
+
+          totalPresent: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalPresent", 0] }, 0],
+          },
+
+          totalAbsent: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalAbsent", 0] }, 0],
+          },
+
+          totalLeave: {
+            $ifNull: [{ $arrayElemAt: ["$summary.totalLeave", 0] }, 0],
           },
         },
       },
@@ -526,6 +577,7 @@ export const attendanceListByRole = async (req, res) => {
     )(req, res);
   } catch (err) {
     logMessage("Error in attendanceListByRole", err, "error");
+
     return apiHTTPResponse(
       req,
       res,

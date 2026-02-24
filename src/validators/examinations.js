@@ -2,6 +2,7 @@ import {
   dateSchema,
   objectIdValidation,
   optionalEnum,
+  optionalObjectId,
   optionalString,
   requiredArrayWithMinimumLength,
   requiredBoolean,
@@ -127,6 +128,15 @@ const joiValidation = {
     user_id: objectIdValidation("user id"),
     examination_id: objectIdValidation("examination id"),
     admission_id: objectIdValidation("admission id"),
+  },
+  "/submit": {
+    examId: objectIdValidation("examination id"),
+    studentanswer: requiredArrayWithMinimumLength(
+      optionalString(0, Number.MAX_SAFE_INTEGER),
+    ),
+    type: requiredEnum(["Role", "Goal", "Student"]),
+    roleId: optionalObjectId("role id"),
+    goalId: optionalObjectId("goal id"),
   },
 };
 

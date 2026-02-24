@@ -81,4 +81,22 @@ router.get(
   controller.examinationController.getAllExaminations,
 );
 
+router.get(
+  "/role/:roleId",
+  validationMiddleware(),
+  controller.examinationController.getRoleExaminationsForTeacher,
+);
+
+router.get(
+  "/goal/:goalId",
+  validationMiddleware(),
+  controller.examinationController.getGoalExaminationsForTeacher,
+);
+
+router.post(
+  "/submit",
+  validationMiddleware("examinations"),
+  controller.examinationController.submitExam,
+);
+
 export default router;

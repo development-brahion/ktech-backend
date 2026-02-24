@@ -2,7 +2,10 @@ import {
   Admission,
   Answer,
   Examination,
+  Goal,
   HallTicket,
+  Role,
+  User,
 } from "../../models/index.js";
 import { apiHTTPResponse, logMessage } from "../../utils/globalFunction.js";
 import * as CONSTANTS from "../../utils/constants.js";
@@ -315,6 +318,393 @@ export const getAllExaminations = async (req, res) => {
       CONSTANTS_MSG.SERVER_ERROR,
       CONSTANTS.DATA_NULL,
       CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getRoleExaminationsForTeacher = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { roleId } = req.params;
+
+    const roleData = await Role.findOne({
+      _id: roleId,
+      isDeleted: false,
+      assignTo: {
+        $elemMatch: {
+          user: id,
+          status: "Approved",
+        },
+      },
+    }).select("_id");
+
+    if (!roleData) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_BAD_REQUEST,
+        "Role examination not approved for this teacher",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.BAD_REQUEST,
+      );
+    }
+
+    const examination = await Examination.aggregate([
+      {
+        $match: {
+          role: new mongoose.Types.ObjectId(roleId),
+          type: "Role",
+          isDeleted: false,
+          isDraft: false,
+        },
+      },
+      {
+        $project: {
+          examtitle: 1,
+          examduration: 1,
+          passingPercentage: 1,
+          questions: {
+            $map: {
+              input: "$questions",
+              as: "q",
+              in: {
+                question: "$$q.question",
+                option_1: "$$q.option_1",
+                option_2: "$$q.option_2",
+                option_3: "$$q.option_3",
+                option_4: "$$q.option_4",
+              },
+            },
+          },
+        },
+      },
+      { $limit: 1 },
+    ]);
+
+    if (!examination.length) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Role examination not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Role examination fetched",
+      examination[0],
+      CONSTANTS.SUCCESS,
+    );
+  } catch (error) {
+    logMessage("Error in get role examinations for teacher", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getGoalExaminationsForTeacher = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { goalId } = req.params;
+
+    const goalData = await Goal.findOne({
+      _id: goalId,
+      isDeleted: false,
+      assignTo: {
+        $elemMatch: {
+          user: id,
+          status: "Approved",
+        },
+      },
+    }).select("_id");
+
+    if (!goalData) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_BAD_REQUEST,
+        "Goal examination not approved for this teacher",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.BAD_REQUEST,
+      );
+    }
+
+    const examination = await Examination.aggregate([
+      {
+        $match: {
+          goal: new mongoose.Types.ObjectId(goalId),
+          type: "Goal",
+          isDeleted: false,
+          isDraft: false,
+        },
+      },
+      {
+        $project: {
+          examtitle: 1,
+          examduration: 1,
+          passingPercentage: 1,
+          questions: {
+            $map: {
+              input: "$questions",
+              as: "q",
+              in: {
+                question: "$$q.question",
+                option_1: "$$q.option_1",
+                option_2: "$$q.option_2",
+                option_3: "$$q.option_3",
+                option_4: "$$q.option_4",
+              },
+            },
+          },
+        },
+      },
+      { $limit: 1 },
+    ]);
+
+    if (!examination.length) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Goal examination not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Goal examination fetched",
+      examination[0],
+      CONSTANTS.SUCCESS,
+    );
+  } catch (error) {
+    logMessage("Error in get goal examinations for teacher", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const attemptExam = async (req, res) => {
+  const session = await mongoose.startSession();
+
+  try {
+    const { userId, examId, answers } = req.body;
+
+    let responseData;
+
+    await session.withTransaction(async () => {
+      const existingAttempt = await ExamAttempt.findOne({
+        user: userId,
+        exam: examId,
+        isDeleted: false,
+      }).session(session);
+
+      // 🚫 Already passed
+      if (existingAttempt && existingAttempt.isPassed) {
+        throw new Error("You have already passed this exam");
+      }
+
+      // 🔄 Update if failed / not passed
+      if (existingAttempt) {
+        existingAttempt.answers = answers;
+        existingAttempt.attemptCount += 1;
+        existingAttempt.submittedAt = new Date();
+
+        await existingAttempt.save({ session });
+
+        responseData = {
+          message: "Exam re-attempt updated",
+          data: existingAttempt,
+        };
+        return;
+      }
+
+      // ✅ First attempt create
+      const newAttempt = await ExamAttempt.create(
+        [
+          {
+            user: userId,
+            exam: examId,
+            answers,
+            attemptCount: 1,
+            submittedAt: new Date(),
+          },
+        ],
+        { session },
+      );
+
+      responseData = {
+        message: "Exam attempt created",
+        data: newAttempt[0],
+      };
+    });
+
+    session.endSession();
+
+    return res.json({
+      success: true,
+      ...responseData,
+    });
+  } catch (error) {
+    session.endSession();
+
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const submitExam = async (req, res) => {
+  const mongoSession = await mongoose.startSession();
+
+  try {
+    const { examId, studentanswer, type, roleId, goalId } = req.body;
+
+    const userId = req.user.id;
+
+    await mongoSession.withTransaction(async () => {
+      if (type === "Role" && !roleId) {
+        throw new Error("roleId is required when type is Role");
+      }
+
+      if (type === "Goal" && !goalId) {
+        throw new Error("goalId is required when type is Goal");
+      }
+
+      const exam = await Examination.findById(examId).session(mongoSession);
+      if (!exam) throw new Error("Exam not found");
+
+      const existing = await Answer.findOne({
+        examination: examId,
+        userId,
+        isDeleted: false,
+      }).session(mongoSession);
+
+      if (existing && existing.result === "PASS") {
+        throw new Error("You already passed this exam");
+      }
+
+      let score = 0;
+      const total = exam.questions.length;
+
+      const resultArray = exam.questions.map((q, i) => {
+        const correct = q.answer;
+        const selected = studentanswer[i] || "";
+        const iscorrect = correct === selected;
+        if (iscorrect) score++;
+
+        return {
+          correctanswer: correct,
+          selectanswerbystudent: selected,
+          iscorrect,
+        };
+      });
+
+      const percentage = (score / total) * 100;
+      const resultStatus =
+        percentage >= exam.passingPercentage ? "PASS" : "FAIL";
+
+      if (type === "Role") {
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $addToSet: resultStatus === "PASS" ? { Roleid: roleId } : {},
+          },
+          { session: mongoSession },
+        );
+      }
+
+      if (type === "Goal") {
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $addToSet: resultStatus === "PASS" ? { Goalid: goalId } : {},
+          },
+          { session: mongoSession },
+        );
+      }
+
+      let finalAnswer;
+
+      if (existing) {
+        existing.studentanswer = studentanswer;
+        existing.marks = score;
+        existing.result = resultStatus;
+        existing.attemptCount = (existing.attemptCount || 1) + 1;
+
+        await existing.save({ session: mongoSession });
+        finalAnswer = existing;
+      } else {
+        const created = await Answer.create(
+          [
+            {
+              examination: examId,
+              userId,
+              studentanswer,
+              marks: score,
+              result: resultStatus,
+              type,
+              attemptCount: 1,
+            },
+          ],
+          { session: mongoSession },
+        );
+
+        finalAnswer = created[0];
+      }
+
+      const admission = await Admission.findOne({ user: userId }).session(
+        mongoSession,
+      );
+
+      if (admission) {
+        admission.result = finalAnswer._id;
+        admission.attemptedexam = true;
+        admission.ispassed = resultStatus === "PASS";
+        await admission.save({ session: mongoSession });
+      }
+
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_OK,
+        "Exam submitted",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.OK,
+      );
+    });
+
+    mongoSession.endSession();
+  } catch (error) {
+    mongoSession.endSession();
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_BAD_REQUEST,
+      error.message || CONSTANTS_MSG.FAILED_MSG,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.BAD_REQUEST,
     );
   }
 };

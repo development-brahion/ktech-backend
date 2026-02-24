@@ -250,7 +250,7 @@ export const viewProfile = async (req, res) => {
       {
         _id: id,
       },
-      "name status email phoneNo address role dateOfBirth dateOfJoining profilephoto _id",
+      "name status email phoneNo address role dateOfBirth dateOfJoining profilephoto _id referralCode amount",
     );
 
     if (statusCode === CONSTANTS.OK) {
