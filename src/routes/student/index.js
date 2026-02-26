@@ -52,4 +52,16 @@ router.post(
   controllers.studentController.reAdmitStudent,
 );
 
+router.get(
+  "/overview",
+  validationMiddleware(),
+  controllers.studentController.viewOverview,
+);
+
+router.get(
+  "/my-courses",
+  validationMiddleware("students"),
+  controllers.studentController.myCourses,
+);
+
 export default router;

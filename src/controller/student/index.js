@@ -791,3 +791,145 @@ export const reAdmitStudent = async (req, res) => {
     session.endSession();
   }
 };
+
+export const viewOverview = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const pipeline = [
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(id),
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          course: {
+            _id: "$course._id",
+            courseName: "$course.courseName",
+          },
+          admissionDate: 1,
+          rollNo: 1,
+          type: 1,
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(Admission, pipeline)(req, res);
+  } catch (error) {
+    logMessage("Error in get admission details", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};
+
+export const myCourses = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { page = 1, size = 10 } = req.body;
+
+    const limit = Number(size);
+    const skip = (Number(page) - 1) * limit;
+
+    const pipeline = [
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(id),
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      {
+        $unwind: {
+          path: "$course",
+          preserveNullAndEmptyArrays: false,
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          course: {
+            _id: "$course._id",
+            courseName: "$course.courseName",
+            actualPrice: "$course.actualPrice",
+            sellingPrice: "$course.sellingPrice",
+            duration: "$course.duration",
+            totalLectures: "$course.totalLectures",
+            description: "$course.description",
+          },
+          admissionDate: 1,
+          rollNo: 1,
+          type: 1,
+        },
+      },
+
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          list: [{ $skip: skip }, { $limit: limit }],
+        },
+      },
+      {
+        $unwind: {
+          path: "$metadata",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $project: {
+          total: { $ifNull: ["$metadata.total", 0] },
+          page: { $literal: Number(page) },
+          size: { $literal: limit },
+          list: 1,
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(
+      Admission,
+      pipeline,
+      CONSTANTS.BOOLEAN_TRUE,
+    )(req, res);
+  } catch (error) {
+    logMessage("Error in myCourses", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};

@@ -708,3 +708,245 @@ export const submitExam = async (req, res) => {
     );
   }
 };
+
+export const getStudentExamsList = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { page = 1, size = 10 } = req.body;
+
+    const limit = Number(size);
+    const skip = (page - 1) * limit;
+
+    const pipeline = [
+      {
+        $match: { isDeleted: false, isDraft: false, type: "Student" },
+      },
+
+      {
+        $lookup: {
+          from: "admissions",
+          let: { course: "$course", batch: "$batch" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$course", "$$course"] },
+                    { $eq: ["$batch", "$$batch"] },
+                    { $eq: ["$user", new mongoose.Types.ObjectId(id)] },
+                    { $eq: ["$isDeleted", false] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "admission",
+        },
+      },
+
+      {
+        $unwind: "$admission",
+      },
+
+      {
+        $lookup: {
+          from: "halltickets",
+          let: { examId: "$_id", admissionId: "$admission._id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$examination_id", "$$examId"] },
+                    { $eq: ["$admission_id", "$$admissionId"] },
+                    { $eq: ["$user_id", new mongoose.Types.ObjectId(id)] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "hallticket",
+        },
+      },
+
+      {
+        $addFields: {
+          hallticketdata: { $gt: [{ $size: "$hallticket" }, 0] },
+          attemptedexam: "$admission.attemptedexam",
+          ispassed: "$admission.ispassed",
+        },
+      },
+
+      {
+        $lookup: {
+          from: "courses",
+          localField: "course",
+          foreignField: "_id",
+          as: "course",
+        },
+      },
+      { $unwind: "$course" },
+
+      {
+        $lookup: {
+          from: "batches",
+          localField: "batch",
+          foreignField: "_id",
+          as: "batch",
+        },
+      },
+      { $unwind: "$batch" },
+
+      {
+        $addFields: {
+          hallticketId: { $arrayElemAt: ["$hallticket._id", 0] },
+        },
+      },
+
+      {
+        $project: {
+          _id: 1,
+          examtitle: 1,
+          time: 1,
+          examduration: 1,
+          passingPercentage: 1,
+
+          course: {
+            _id: "$course._id",
+            courseName: "$course.courseName",
+          },
+
+          batch: {
+            _id: "$batch._id",
+            startTime: "$batch.startTime",
+            endTime: "$batch.endTime",
+          },
+
+          hallticketId: 1,
+          ispassed: 1,
+          hallticketdata: 1,
+        },
+      },
+
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          list: [{ $skip: skip }, { $limit: limit }],
+        },
+      },
+      { $unwind: { path: "$metadata", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          total: { $ifNull: ["$metadata.total", 0] },
+          page: { $literal: Number(page) },
+          size: { $literal: limit },
+          list: 1,
+        },
+      },
+    ];
+
+    return crudService.executeAggregation(Examination, pipeline)(req, res);
+  } catch (error) {
+    logMessage("Error in get student exams list", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getStudentExamById = async (req, res) => {
+  try {
+    const { id: userId } = req.user;
+    const { id: examinationId } = req.params;
+
+    const exam = await Examination.findOne({
+      _id: examinationId,
+      type: "Student",
+      isDeleted: false,
+      isDraft: false,
+    })
+      .select(
+        "_id course batch examtitle examduration passingPercentage questions",
+      )
+      .lean();
+
+    if (!exam) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_NOT_FOUND,
+        "Examination not found",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.NOT_FOUND,
+      );
+    }
+
+    const admission = await Admission.findOne({
+      user: userId,
+      course: exam.course,
+      batch: exam.batch,
+      isDeleted: false,
+    }).select("_id attemptedexam ispassed");
+
+    if (!admission) {
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_BAD_REQUEST,
+        "Student not enrolled for this exam",
+        CONSTANTS.DATA_NULL,
+        CONSTANTS.BAD_REQUEST,
+      );
+    }
+
+    const questions = exam.questions.map((q) => ({
+      question: q.question,
+      option_1: q.option_1,
+      option_2: q.option_2,
+      option_3: q.option_3,
+      option_4: q.option_4,
+    }));
+
+    const hall = await HallTicket.findOne({
+      user_id: userId,
+      examination_id: examinationId,
+      admission_id: admission._id,
+      isDeleted: false,
+    }).select("_id");
+
+    const response = {
+      _id: exam._id,
+      examtitle: exam.examtitle,
+      examduration: exam.examduration,
+      passingPercentage: exam.passingPercentage,
+      questions,
+      hallticketId: hall?._id || null,
+      attemptedexam: admission.attemptedexam,
+      ispassed: admission.ispassed,
+    };
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Student exam fetched",
+      response,
+      CONSTANTS.OK,
+    );
+  } catch (error) {
+    logMessage("Error in get student exam by id", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};

@@ -99,4 +99,16 @@ router.post(
   controller.examinationController.submitExam,
 );
 
+router.get(
+  "/student/my-exams",
+  validationMiddleware("examinations"),
+  controller.examinationController.getStudentExamsList,
+);
+
+router.get(
+  "/student/:id",
+  validationMiddleware("examinations"),
+  controller.examinationController.getStudentExamById,
+);
+
 export default router;

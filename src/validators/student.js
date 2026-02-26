@@ -138,6 +138,19 @@ const joiValidation = {
     installments: optionalArrayWithMinimumLength(installmentSchema),
     admissionDate: optionalString(0, Number.MAX_SAFE_INTEGER),
   },
+  "/my-courses": {
+    keyWord: optionalString(0, 500),
+    sortBy: optionalString(0, 50),
+    sortOrder: optionalEnum(["asc", "desc"]),
+    page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    select: optionalString(0, 10000),
+    searchFields: optionalString(0, 10000),
+    populate: optionalString(0, 10000),
+    query: optionalString(0, 10000),
+    fromDate: dateSchema("From Date"),
+    toDate: dateSchema("To Date"),
+  },
 };
 
 export default joiValidation;

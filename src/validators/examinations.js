@@ -138,6 +138,10 @@ const joiValidation = {
     roleId: optionalObjectId("role id"),
     goalId: optionalObjectId("goal id"),
   },
+  "/student/my-exams": {
+    page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+    size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+  },
 };
 
 export default joiValidation;
