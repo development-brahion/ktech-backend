@@ -429,7 +429,7 @@ export const attendanceListByRole = async (req, res) => {
     }
 
     /* ================= SELF ACCESS RULE ================= */
-    if (["Student", "Teacher"].includes(role)) {
+    if (["Student", "Teacher"].includes(role) && type != "Student") {
       match.user = new mongoose.Types.ObjectId(id);
     }
 
