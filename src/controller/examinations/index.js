@@ -845,7 +845,7 @@ export const getStudentExamsList = async (req, res) => {
       },
     ];
 
-    return crudService.executeAggregation(Examination, pipeline)(req, res);
+    return crudService.executeAggregation(Examination, pipeline,true)(req, res);
   } catch (error) {
     logMessage("Error in get student exams list", error, "error");
     return apiHTTPResponse(
