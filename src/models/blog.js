@@ -7,14 +7,17 @@ const blogSchema = new Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     shortDescription: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim:true
     },
     thumbnailImage:FileDbSchema, 
     mainImageUrl: FileDbSchema,

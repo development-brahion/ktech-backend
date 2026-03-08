@@ -91,6 +91,7 @@ const globalCrudService = {
       message = "SUCCESS_MSG",
       rawMessage = CONSTANTS.BOOLEAN_FALSE,
       isReturnId = false,
+      isFromCrud = true,
     ) =>
     async (req, res) => {
       try {
@@ -99,7 +100,7 @@ const globalCrudService = {
           model,
           _id,
           { ...rest, updatedAt: Date.now() },
-          CONSTANTS.BOOLEAN_TRUE,
+          isFromCrud,
         );
         if (result.statusCode === CONSTANTS.OK)
           return handleSuccess(
@@ -328,7 +329,6 @@ const globalCrudService = {
 
   getList: (model, isDeletedApplicable) => async (req, res) => {
     try {
-      console.log("isDeletedApplicable", isDeletedApplicable);
       const options = {
         pageNo: parseInt(req.body.page) || 1,
         size: parseInt(req.body.size) || 10,

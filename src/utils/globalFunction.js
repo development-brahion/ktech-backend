@@ -4,7 +4,7 @@ import geoip from "geoip-lite";
 import moment from "moment-timezone";
 import * as crypto from "crypto";
 
-export const guessedTimezone = moment.tz.guess();
+export const guessedTimezone = "Asia/Kolkata";
 
 export const momentTZ = moment;
 
@@ -311,7 +311,7 @@ export function getRefreshTokenExpiry() {
   return Math.floor(accessSec * multiplier);
 }
 
-const generateReferralCode = () => {
+export const generateReferralCode = () => {
   return crypto.randomBytes(6).toString("hex");
 };
 
@@ -343,3 +343,23 @@ export async function hashAndEncryptPassword(password) {
     encryptedPassword: `${IV.toString("hex")}:${encrypted}`,
   };
 }
+
+export const parseDateUTC = (dateStr) => {
+  const [day, month, year] = dateStr.split("-").map(Number);
+
+  return {
+    start: new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)),
+    end: new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)),
+  };
+};
+
+export const parseStartDate = (dateStr) => {
+  const [d, m, y] = dateStr.split("-");
+  return new Date(`${y}-${m}-${d}T00:00:00.000Z`);
+};
+
+export const parseEndDate = (dateStr) => {
+  const [d, m, y] = dateStr.split("-");
+  return new Date(`${y}-${m}-${d}T23:59:59.999Z`);
+};
+

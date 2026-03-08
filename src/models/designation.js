@@ -7,6 +7,7 @@ const designationSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     salary: {
       type: Number,
@@ -15,8 +16,12 @@ const designationSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Designation = mongoose.model("Designation", designationSchema);

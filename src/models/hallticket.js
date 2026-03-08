@@ -9,7 +9,7 @@ const hallTicketSchema = new Schema(
       ref: "User",
       required: true,
     },
-    examnition_id: {
+    examination_id: {
       type: mongoose.Types.ObjectId,
       ref: "Examination",
       required: true,
@@ -19,10 +19,14 @@ const hallTicketSchema = new Schema(
       ref: "Admission",
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
 
-const HallTicket = mongoose.model("hallTicket", hallTicketSchema);
+const HallTicket = mongoose.model("HallTicket", hallTicketSchema);
 
 export default HallTicket;

@@ -39,6 +39,10 @@ const answerSchema = new Schema(
     //     return this.type === "Role" && this.result === "PASS";
     //   },
     // },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

@@ -3,6 +3,8 @@ import {
   AboutUs,
   TermsAndConditions,
   PrivacyPolicy,
+  WhyUs,
+  RefundPolicy,
 } from "./aboutTermPrivacy.js";
 import Admission from "./admission.js";
 import Answer from "./answers.js";
@@ -40,7 +42,7 @@ import StudentCertificate from "./studentCertificate.js";
 import Task from "./task.js";
 import Testimonial from "./testimonial.js";
 import { Transaction, TransactionCategory } from "./transaction.js";
-
+import VisitorsBook from "./visitorsBooks.js";
 export {
   User,
   AboutUs,
@@ -83,4 +85,7 @@ export {
   Testimonial,
   Transaction,
   TransactionCategory,
+  WhyUs,
+  RefundPolicy,
+  VisitorsBook,
 };

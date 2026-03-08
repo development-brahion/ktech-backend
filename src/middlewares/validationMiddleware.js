@@ -72,6 +72,7 @@ const validationMiddleware =
 
       const path = req.path;
 
+
       const schemaObject = useCommon
         ? commonValidators[path] || {}
         : role

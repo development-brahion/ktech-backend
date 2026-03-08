@@ -7,6 +7,7 @@ const coursePlansSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     status: {
       type: Boolean,
@@ -26,8 +27,12 @@ const coursePlansSchema = new Schema(
     //   type: mongoose.Schema.Types.ObjectId,
     //   ref: "Batch",
     // },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const CoursePlans = mongoose.model("CoursePlans", coursePlansSchema);

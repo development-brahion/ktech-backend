@@ -607,3 +607,30 @@ export const fileObjectJoiSchema = () => {
     url: Joi.string().uri().required(),
   });
 };
+
+export const optionalFileObjectJoiSchema = () => {
+  return Joi.object({
+    filename: Joi.string().required(),
+    path: Joi.string().required(),
+    mimetype: Joi.string().required(),
+    url: Joi.string().uri().required(),
+  })
+    .optional()
+    .allow({});
+};
+
+export const dateSchemaRequired = (fieldName) =>
+  Joi.string()
+    .pattern(/^\d{2}-\d{2}-\d{4}$/)
+    .required()
+    .messages({
+      "string.pattern.base": `${fieldName} must be in DD-MM-YYYY format`,
+    });
+
+export const defaultDateSchema = (fieldName) =>
+  Joi.string()
+    .pattern(/^\d{4}-\d{2}-\d{2}$/)
+    .required()
+    .messages({
+      "string.pattern.base": `${fieldName} must be in YYYY-MM-DD format`,
+    });

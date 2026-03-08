@@ -5,11 +5,12 @@ const { Schema } = mongoose;
 
 const ProductSchema = new Schema(
   {
-    pname: {
+    name: {
       type: String,
       required: true,
+      trim: true,
     },
-    pcategory: {
+    category: {
       type: mongoose.Types.ObjectId,
       ref: "ProductCategory",
       required: true,
@@ -18,7 +19,7 @@ const ProductSchema = new Schema(
       type: Number,
       required: true,
     },
-    sellingprice: {
+    sellingPrice: {
       type: Number,
       required: true,
     },
@@ -30,9 +31,13 @@ const ProductSchema = new Schema(
       type: String,
       required: true,
     },
-    pimage: [FileDbSchema],
+    image: [FileDbSchema],
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product = mongoose.model("Product", ProductSchema);

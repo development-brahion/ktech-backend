@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { FileDbSchema } from "./fileDb.js";
 
 const { Schema } = mongoose;
 
@@ -7,18 +8,19 @@ const courseSchema = new Schema(
     template: {
       type: String,
       required: true,
+      trim: true,
     },
     courseName: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
-    mainImageUrl: {
-      type: String,
-    },
+    mainImageUrl: FileDbSchema,
     language: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -51,8 +53,12 @@ const courseSchema = new Schema(
       type: Number,
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Courses = mongoose.model("Courses", courseSchema);

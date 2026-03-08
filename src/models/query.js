@@ -7,21 +7,22 @@ const QuerySchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
-      default: true,
+      trim: true,
     },
     mobile: {
       type: String,
-      default: true,
+      trim: true,
     },
     query: {
       type: String,
-      default: true,
+      trim: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Query = mongoose.model("Query", QuerySchema);

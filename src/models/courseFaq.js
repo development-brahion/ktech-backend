@@ -8,13 +8,15 @@ const courseFaqItemSchema = new Schema(
     question: {
       type: String,
       default: "",
+      trim: true,
     },
     answer: {
       type: String,
       default: "",
+      trim: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 // Main CourseFaq Schema
@@ -22,31 +24,40 @@ const CourseFaqSchema = new Schema(
   {
     text: {
       type: String,
+      trim: true,
     },
     courseFaqBanner: {
       heading: {
         type: String,
         default: "",
+        trim: true,
       },
       subHeading: {
         type: String,
         default: "",
+        trim: true,
       },
       bgColor: {
         type: String,
         default: "",
+        trim: true,
       },
       textColor: {
         type: String,
         default: "",
+        trim: true,
       },
     },
     courseFaq: {
       type: [courseFaqItemSchema],
       default: [],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Model
