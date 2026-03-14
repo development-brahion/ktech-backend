@@ -50,6 +50,8 @@ export const create = async (req, res) => {
       );
     }
 
+    Object.assign(req.body, { adminId: req.user.id });
+
     return crudService.create(
       Language,
       languageMessages.create,
