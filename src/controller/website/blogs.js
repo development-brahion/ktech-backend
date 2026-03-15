@@ -15,21 +15,6 @@ const languageMessages = {
 
 export const list = async (req, res) => {
   try {
-    const { id, role } = req.user;
-    const baseQuery = req.body?.query
-      ? typeof req.body.query === "string"
-        ? JSON.parse(req.body.query)
-        : req.body.query
-      : {};
-
-    if (role === "Admin") {
-      baseQuery.adminId = id;
-    }
-
-    Object.assign(req.body, {
-      query: baseQuery,
-    });
-
     return crudService.getList(Blog, CONSTANTS.BOOLEAN_TRUE)(req, res);
   } catch (error) {
     logMessage("Error in list blog", error, "error");
