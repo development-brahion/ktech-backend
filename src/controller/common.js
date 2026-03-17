@@ -8,6 +8,7 @@ export const nameStatusController = (
   Model,
   messages = {},
   entityName = "Record",
+  isSaveAdmin = false,
 ) => {
   return {
     list: async (req, res) => {
@@ -48,6 +49,10 @@ export const nameStatusController = (
         }
 
         req.body.name = name.trim();
+
+        if (isSaveAdmin) {
+          req.body.adminId = req.user.id;
+        }
 
         return crudService.create(
           Model,
