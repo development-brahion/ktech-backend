@@ -199,7 +199,12 @@ export const nameStatusController = (
   };
 };
 
-export const crudController = (Model, messages = {}, entityName = "Record") => {
+export const crudController = (
+  Model,
+  messages = {},
+  entityName = "Record",
+  isSaveAdmin = false,
+) => {
   return {
     list: async (req, res) => {
       try {
@@ -220,6 +225,9 @@ export const crudController = (Model, messages = {}, entityName = "Record") => {
 
     create: async (req, res) => {
       try {
+         if (isSaveAdmin) {
+          req.body.adminId = req.user.id;
+        }
         return crudService.create(
           Model,
           messages.create || `${entityName} created successfully`,

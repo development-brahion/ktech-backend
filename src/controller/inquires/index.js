@@ -54,7 +54,7 @@ export const {
   enableDisable: enableDisableSource,
   softDelete: softDeleteSource,
   allDocs: allSources,
-} = nameStatusController(Source, sourceMessages, "Source");
+} = nameStatusController(Source, sourceMessages, "Source", true);
 
 export const {
   list: statusList,
@@ -63,7 +63,7 @@ export const {
   enableDisable: enableDisableStatus,
   softDelete: softDeleteStatus,
   allDocs: allStatus,
-} = nameStatusController(Status, statusMessages, "Status");
+} = nameStatusController(Status, statusMessages, "Status", true);
 
 export const {
   list: inquiryList,
@@ -72,7 +72,7 @@ export const {
   softDelete: softDeleteInquiry,
   update: moveToAdmission,
   singleDocument: getInquiryDocument,
-} = crudController(Inquiry, inquiryMessages, "Inquiry");
+} = crudController(Inquiry, inquiryMessages, "Inquiry", true);
 
 export const addRemark = async (req, res) => {
   try {
@@ -162,6 +162,7 @@ export const followUps = async (req, res) => {
         $gte: start,
         $lte: end,
       },
+      adminId:req.user.id
     };
 
     const { data } = await findByQueryLeanWithSelect(
@@ -196,12 +197,13 @@ export const {
   create: createVisitorBook,
   update: updateVisitorBook,
   softDelete: softDeleteVisitorBook,
-} = crudController(VisitorsBook, visitorMessages, "Visitor book");
+} = crudController(VisitorsBook, visitorMessages, "Visitor book",true);
 
 export const followUpsOnVisitorBook = async (req, res) => {
   try {
     const start = momentTZ.tz(guessedTimezone).startOf("day").utc().toDate();
     const end = momentTZ.tz(guessedTimezone).endOf("day").utc().toDate();
+
 
     const query = {
       isDeleted: CONSTANTS.BOOLEAN_FALSE,
@@ -209,12 +211,13 @@ export const followUpsOnVisitorBook = async (req, res) => {
         $gte: start,
         $lte: end,
       },
+      adminId:req.user.id
     };
 
     const { data } = await findByQueryLeanWithSelect(
       VisitorsBook,
       query,
-      "name phoneNo meetingWith followUpDate purpose",
+      "name phoneNo meetingWith followUpDate purpose adminId",
     );
 
     return apiHTTPResponse(

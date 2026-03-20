@@ -20,7 +20,7 @@ const inquirySchema = new Schema(
     },
     course: {
       type: mongoose.Types.ObjectId,
-      ref: "Course",
+      ref: "Courses",
     },
     enquiryDate: {
       type: Date,
@@ -59,6 +59,10 @@ const inquirySchema = new Schema(
         },
       },
     ],
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );

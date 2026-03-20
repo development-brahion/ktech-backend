@@ -17,6 +17,10 @@ const statusSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );
