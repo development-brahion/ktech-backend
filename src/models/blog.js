@@ -1,5 +1,5 @@
-import mongoose from "mongoose"
-import {FileDbSchema} from "./fileDb.js";
+import mongoose from "mongoose";
+import { FileDbSchema } from "./fileDb.js";
 const { Schema } = mongoose;
 
 const blogSchema = new Schema(
@@ -17,9 +17,9 @@ const blogSchema = new Schema(
     description: {
       type: String,
       required: true,
-      trim:true
+      trim: true,
     },
-    thumbnailImage:FileDbSchema, 
+    thumbnailImage: FileDbSchema,
     mainImageUrl: FileDbSchema,
     language: [
       {
@@ -41,8 +41,12 @@ const blogSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    adminId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Blog = mongoose.model("Blog", blogSchema);

@@ -15,7 +15,7 @@ const languageMessages = {
 
 export const list = async (req, res) => {
   try {
-    return crudService.getList(Blog,CONSTANTS.BOOLEAN_TRUE)(req, res);
+    return crudService.getList(Blog, CONSTANTS.BOOLEAN_TRUE)(req, res);
   } catch (error) {
     logMessage("Error in list blog", error, "error");
     return apiHTTPResponse(
@@ -49,6 +49,8 @@ export const create = async (req, res) => {
         CONSTANTS.CONFLICT,
       );
     }
+
+    Object.assign(req.body, { adminId: req.user.id });
 
     return crudService.create(
       Blog,
@@ -157,10 +159,7 @@ export const softDelete = async (req, res) => {
 
 export const allDocs = async (req, res) => {
   try {
-    return crudService.getALLDocuments(Blog, CONSTANTS.BOOLEAN_FALSE)(
-      req,
-      res,
-    );
+    return crudService.getALLDocuments(Blog, CONSTANTS.BOOLEAN_FALSE)(req, res);
   } catch (error) {
     logMessage("Error in get all blog", error, "error");
     return apiHTTPResponse(

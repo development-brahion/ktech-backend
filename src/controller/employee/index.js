@@ -82,7 +82,7 @@ export const {
   softDelete: softDeleteDepartment,
   allDocs: allDepartments,
   singleDocument: getDepartmentDocument,
-} = nameStatusController(Department, departmentMessages, "Department");
+} = nameStatusController(Department, departmentMessages, "Department",true);
 
 export const {
   list: designationList,
@@ -92,21 +92,21 @@ export const {
   softDelete: softDeleteDesignation,
   allDocs: allDesignations,
   singleDocument: getDesignationDocument,
-} = nameStatusController(Designation, designationMessages, "Designation");
+} = nameStatusController(Designation, designationMessages, "Designation",true);
 
 export const {
   list: roleList,
   create: createRole,
   softDelete: softDeleteRole,
   allDocs: allRoles,
-} = nameStatusController(Role, roleMessages, "Role");
+} = nameStatusController(Role, roleMessages, "Role",true);
 
 export const {
   list: goalList,
   create: createGoal,
   softDelete: softDeleteGoal,
   allDocs: allGoals,
-} = nameStatusController(Goal, goalMessages, "Goal");
+} = nameStatusController(Goal, goalMessages, "Goal",true);
 
 export const {
   list: leaveTypeList,
@@ -115,7 +115,7 @@ export const {
   enableDisable: enableDisableLeaveType,
   softDelete: softDeleteLeaveType,
   allDocs: allLeaveTypes,
-} = nameStatusController(LeaveType, leaveTypeMessages, "Leave type");
+} = nameStatusController(LeaveType, leaveTypeMessages, "Leave type",true);
 
 export const { enableDisable: enableDisableTeacher } = nameStatusController(
   User,
