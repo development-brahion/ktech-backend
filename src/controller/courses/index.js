@@ -72,6 +72,8 @@ export const create = async (req, res) => {
       );
     }
 
+    Object.assign(req.body, { adminId: req.user.id });
+
     return crudService.create(
       Course,
       courseMessages.create,
@@ -226,7 +228,7 @@ export const {
   softDelete: softDeletePlan,
   allDocs: allPlans,
   singleDocument: getPlanDocument,
-} = nameStatusController(CoursePlans, planMessages, "Course plan");
+} = nameStatusController(CoursePlans, planMessages, "Course plan", true);
 
 export const {
   list: batchList,
@@ -263,6 +265,7 @@ export const createBatch = async (req, res) => {
       courses,
       totalSeat,
       availableSeat: totalSeat,
+      adminId: req.user.id,
     };
 
     await Batch.create(batchData);
