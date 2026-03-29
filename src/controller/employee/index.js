@@ -6,6 +6,7 @@ import {
   LeaveType,
   ReferralAmount,
   Role,
+  Rule,
   Task,
   User,
 } from "../../models/index.js";
@@ -16,7 +17,7 @@ import {
   parseEndDate,
   parseStartDate,
 } from "../../utils/globalFunction.js";
-import { nameStatusController } from "../common.js";
+import { crudController, nameStatusController } from "../common.js";
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import crudService from "../../services/crudService.js";
@@ -74,6 +75,15 @@ const teachersMessages = {
   fetched: "Teacher fetched successfully",
 };
 
+const ruleMessages = {
+  create: "Rule created successfully",
+  update: "Rule updated successfully",
+  status: "Rule status updated successfully",
+  delete: "Rule deleted successfully",
+  exists: "Rule already exists",
+  fetched: "Rule fetched successfully",
+};
+
 export const {
   list: departmentList,
   create: createDepartment,
@@ -82,7 +92,7 @@ export const {
   softDelete: softDeleteDepartment,
   allDocs: allDepartments,
   singleDocument: getDepartmentDocument,
-} = nameStatusController(Department, departmentMessages, "Department",true);
+} = nameStatusController(Department, departmentMessages, "Department", true);
 
 export const {
   list: designationList,
@@ -92,21 +102,21 @@ export const {
   softDelete: softDeleteDesignation,
   allDocs: allDesignations,
   singleDocument: getDesignationDocument,
-} = nameStatusController(Designation, designationMessages, "Designation",true);
+} = nameStatusController(Designation, designationMessages, "Designation", true);
 
 export const {
   list: roleList,
   create: createRole,
   softDelete: softDeleteRole,
   allDocs: allRoles,
-} = nameStatusController(Role, roleMessages, "Role",true);
+} = nameStatusController(Role, roleMessages, "Role", true);
 
 export const {
   list: goalList,
   create: createGoal,
   softDelete: softDeleteGoal,
   allDocs: allGoals,
-} = nameStatusController(Goal, goalMessages, "Goal",true);
+} = nameStatusController(Goal, goalMessages, "Goal", true);
 
 export const {
   list: leaveTypeList,
@@ -115,7 +125,7 @@ export const {
   enableDisable: enableDisableLeaveType,
   softDelete: softDeleteLeaveType,
   allDocs: allLeaveTypes,
-} = nameStatusController(LeaveType, leaveTypeMessages, "Leave type",true);
+} = nameStatusController(LeaveType, leaveTypeMessages, "Leave type", true);
 
 export const { enableDisable: enableDisableTeacher } = nameStatusController(
   User,
@@ -789,3 +799,12 @@ export const myIncentives = async (req, res) => {
     );
   }
 };
+
+export const {
+  list: ruleList,
+  create: createRule,
+  update: updateRule,
+  enableDisable: enableDisableRule,
+  softDelete: softDeleteRule,
+  allDocs: allRules,
+} = crudController(Rule, ruleMessages, "Rule");

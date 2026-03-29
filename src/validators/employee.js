@@ -125,6 +125,22 @@ const joiValidation = {
   "/referral-amount": {
     amount: requiredNumber(1, Number.MAX_SAFE_INTEGER),
   },
+
+  rules: {
+    "/create": {
+      rule: requiredString(1, Number.MAX_SAFE_INTEGER),
+      role: requiredEnum(["Admin", "Student", "Teacher"]),
+    },
+    "/update": {
+      _id: objectIdValidation("id"),
+      rule: requiredString(1, Number.MAX_SAFE_INTEGER),
+      role: requiredEnum(["Admin", "Student", "Teacher"]),
+    },
+    "/enable-disable": {
+      _id: objectIdValidation("id"),
+      status: requiredBoolean(),
+    },
+  },
 };
 
 export default joiValidation;

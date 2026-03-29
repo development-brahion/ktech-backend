@@ -43,6 +43,7 @@ import Task from "./task.js";
 import Testimonial from "./testimonial.js";
 import { Transaction, TransactionCategory } from "./transaction.js";
 import VisitorsBook from "./visitorsBooks.js";
+import Rule from "./rule.js";
 export {
   User,
   AboutUs,
@@ -88,4 +89,5 @@ export {
   WhyUs,
   RefundPolicy,
   VisitorsBook,
+  Rule,
 };

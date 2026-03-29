@@ -9,6 +9,7 @@ const roleRouter = Router();
 const goalRouter = Router();
 const leaveTypeRouter = Router();
 const teacherRouter = Router();
+const ruleRouter = Router();
 
 departmentRouter.get(
   "/list",
@@ -256,11 +257,48 @@ teacherRouter.get(
   controllers.employeeController.myIncentives,
 );
 
+ruleRouter.get(
+  "/list",
+  validationMiddleware("", "", true),
+  controllers.employeeController.ruleList,
+);
+
+ruleRouter.get(
+  "/all-documents",
+  validationMiddleware("", "", true),
+  controllers.employeeController.allRules,
+);
+
+ruleRouter.post(
+  "/create",
+  validationMiddleware("employee", "rules"),
+  controllers.employeeController.createRule,
+);
+
+ruleRouter.post(
+  "/update",
+  validationMiddleware("employee", "rules"),
+  controllers.employeeController.updateRule,
+);
+
+ruleRouter.post(
+  "/enable-disable",
+  validationMiddleware("employee", "rules"),
+  controllers.employeeController.enableDisableRule,
+);
+
+ruleRouter.delete(
+  "/soft-delete",
+  validationMiddleware("", "", true),
+  controllers.employeeController.softDeleteRule,
+);
+
 router.use("/departments", departmentRouter);
 router.use("/designations", designationRouter);
 router.use("/roles", roleRouter);
 router.use("/goals", goalRouter);
 router.use("/leave-types", leaveTypeRouter);
 router.use("/teachers", teacherRouter);
+router.use("/rules", ruleRouter);
 
 export default router;
