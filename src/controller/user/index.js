@@ -8,7 +8,10 @@ import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import crudService from "../../services/crudService.js";
 import { User } from "../../models/index.js";
-import { findOneByQueryLean, updateDocumentByQueryAndData } from "../../services/serviceGlobal.js";
+import {
+  findOneByQueryLean,
+  updateDocumentByQueryAndData,
+} from "../../services/serviceGlobal.js";
 import { nameStatusController } from "../common.js";
 
 export const getUserList = async (req, res) => {
@@ -70,6 +73,7 @@ export const createUser = async (req, res) => {
       password: hashedPassword,
       originalPassword: encryptedPassword,
       referralCode,
+      adminId: req.user.id,
     });
 
     await newUser.save();
@@ -223,8 +227,5 @@ export const updateUser = async (req, res) => {
   }
 };
 
-export const { enableDisable: enableDisableUser,allDocs: allUsers } = nameStatusController(
-  User,
-  {},
-  "User",
-);
+export const { enableDisable: enableDisableUser, allDocs: allUsers } =
+  nameStatusController(User, {}, "User");

@@ -88,6 +88,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    adminId: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );
