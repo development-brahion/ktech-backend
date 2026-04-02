@@ -365,6 +365,189 @@ export const getReferralAmountPanel = async (req, res) => {
   }
 };
 
+// export const assignGoalToTeacher = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const { teacherId, goalId } = req.body;
+
+//     const teacher = await User.findOne({ _id: teacherId }, null, { session });
+
+//     if (!teacher) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_NOT_FOUND,
+//         "Teacher not found",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.NOT_FOUND,
+//       );
+//     }
+
+//     const goal = await Goal.findOne({ _id: goalId }, null, { session });
+
+//     if (!goal) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_NOT_FOUND,
+//         "Goal not found",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.NOT_FOUND,
+//       );
+//     }
+
+//     const alreadyExist = goal.assignTo.find(
+//       (item) => String(item.user) === String(teacherId),
+//     );
+
+//     if (alreadyExist) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_BAD_REQUEST,
+//         "Goal already assigned to teacher",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.BAD_REQUEST,
+//       );
+//     }
+
+//     goal.assignTo.push({
+//       user: teacherId,
+//     });
+
+//     await goal.save({ session });
+
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     return apiHTTPResponse(
+//       req,
+//       res,
+//       CONSTANTS.HTTP_OK,
+//       "Goal assigned to teacher successfully",
+//       CONSTANTS.DATA_NULL,
+//       CONSTANTS.OK,
+//     );
+//   } catch (error) {
+//     await session.abortTransaction();
+//     session.endSession();
+
+//     logMessage("Error in assignGoalToTeacher controller", error, "error");
+
+//     return apiHTTPResponse(
+//       req,
+//       res,
+//       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+//       CONSTANTS_MSG.SERVER_ERROR,
+//       CONSTANTS.DATA_NULL,
+//       CONSTANTS.INTERNAL_SERVER_ERROR,
+//     );
+//   }
+// };
+
+// export const assignRoleToTeacher = async (req, res) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
+
+//   try {
+//     const { teacherId, roleId } = req.body;
+
+//     const teacher = await User.findOne({ _id: teacherId }, null, { session });
+
+//     if (!teacher) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_NOT_FOUND,
+//         "Teacher not found",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.NOT_FOUND,
+//       );
+//     }
+
+//     const role = await Role.findOne({ _id: roleId }, null, { session });
+
+//     if (!role) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_NOT_FOUND,
+//         "Role not found",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.NOT_FOUND,
+//       );
+//     }
+
+//     const alreadyExist = role.assignTo.find(
+//       (item) => String(item.user) === String(teacherId),
+//     );
+
+//     if (alreadyExist) {
+//       await session.abortTransaction();
+//       session.endSession();
+
+//       return apiHTTPResponse(
+//         req,
+//         res,
+//         CONSTANTS.HTTP_BAD_REQUEST,
+//         "Role already assigned to teacher",
+//         CONSTANTS.DATA_NULL,
+//         CONSTANTS.BAD_REQUEST,
+//       );
+//     }
+
+//     role.assignTo.push({
+//       user: teacherId,
+//       // assignDate: new Date(),
+//     });
+
+//     await role.save({ session });
+
+//     await session.commitTransaction();
+//     session.endSession();
+
+//     return apiHTTPResponse(
+//       req,
+//       res,
+//       CONSTANTS.HTTP_OK,
+//       "Role assigned to teacher successfully",
+//       CONSTANTS.DATA_NULL,
+//       CONSTANTS.OK,
+//     );
+//   } catch (error) {
+//     await session.abortTransaction();
+//     session.endSession();
+
+//     logMessage("Error in assignRoleToTeacher controller", error, "error");
+
+//     return apiHTTPResponse(
+//       req,
+//       res,
+//       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+//       CONSTANTS_MSG.SERVER_ERROR,
+//       CONSTANTS.DATA_NULL,
+//       CONSTANTS.INTERNAL_SERVER_ERROR,
+//     );
+//   }
+// };
+
 export const assignGoalToTeacher = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -372,7 +555,12 @@ export const assignGoalToTeacher = async (req, res) => {
   try {
     const { teacherId, goalId } = req.body;
 
-    const teacher = await User.findOne({ _id: teacherId }, null, { session });
+    // ✅ Check teacher (lean)
+    const teacher = await User.findOne(
+      { _id: teacherId },
+      null,
+      { session }
+    ).lean();
 
     if (!teacher) {
       await session.abortTransaction();
@@ -384,11 +572,16 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         "Teacher not found",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND,
+        CONSTANTS.NOT_FOUND
       );
     }
 
-    const goal = await Goal.findOne({ _id: goalId }, null, { session });
+    // ✅ Get goal (lean to avoid crash)
+    const goal = await Goal.findOne(
+      { _id: goalId },
+      null,
+      { session }
+    ).lean();
 
     if (!goal) {
       await session.abortTransaction();
@@ -400,12 +593,13 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         "Goal not found",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND,
+        CONSTANTS.NOT_FOUND
       );
     }
 
-    const alreadyExist = goal.assignTo.find(
-      (item) => String(item.user) === String(teacherId),
+    // ✅ Check already assigned
+    const alreadyExist = goal.assignTo?.find(
+      (item) => String(item.user) === String(teacherId)
     );
 
     if (alreadyExist) {
@@ -418,16 +612,26 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_BAD_REQUEST,
         "Goal already assigned to teacher",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.BAD_REQUEST,
+        CONSTANTS.BAD_REQUEST
       );
     }
 
-    goal.assignTo.push({
-      user: teacherId,
-      assignDate: new Date(),
-    });
-
-    await goal.save({ session });
+    // ✅ Update directly (no save)
+    await Goal.updateOne(
+      {
+        _id: goalId,
+        "assignTo.user": { $ne: teacherId }, // extra safety
+      },
+      {
+        $push: {
+          assignTo: {
+            user: teacherId,
+            assignDate: new Date(),
+          },
+        },
+      },
+      { session }
+    );
 
     await session.commitTransaction();
     session.endSession();
@@ -438,7 +642,7 @@ export const assignGoalToTeacher = async (req, res) => {
       CONSTANTS.HTTP_OK,
       "Goal assigned to teacher successfully",
       CONSTANTS.DATA_NULL,
-      CONSTANTS.OK,
+      CONSTANTS.OK
     );
   } catch (error) {
     await session.abortTransaction();
@@ -452,7 +656,7 @@ export const assignGoalToTeacher = async (req, res) => {
       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
       CONSTANTS_MSG.SERVER_ERROR,
       CONSTANTS.DATA_NULL,
-      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.INTERNAL_SERVER_ERROR
     );
   }
 };
@@ -464,7 +668,10 @@ export const assignRoleToTeacher = async (req, res) => {
   try {
     const { teacherId, roleId } = req.body;
 
-    const teacher = await User.findOne({ _id: teacherId }, null, { session });
+    // ✅ Check teacher
+    const teacher = await User.findOne({ _id: teacherId }, null, {
+      session,
+    }).lean();
 
     if (!teacher) {
       await session.abortTransaction();
@@ -480,7 +687,8 @@ export const assignRoleToTeacher = async (req, res) => {
       );
     }
 
-    const role = await Role.findOne({ _id: roleId }, null, { session });
+    // ✅ Get role (lean to avoid date crash)
+    const role = await Role.findOne({ _id: roleId }, null, { session }).lean();
 
     if (!role) {
       await session.abortTransaction();
@@ -496,7 +704,8 @@ export const assignRoleToTeacher = async (req, res) => {
       );
     }
 
-    const alreadyExist = role.assignTo.find(
+    // ✅ Check already assigned
+    const alreadyExist = role.assignTo?.find(
       (item) => String(item.user) === String(teacherId),
     );
 
@@ -514,12 +723,19 @@ export const assignRoleToTeacher = async (req, res) => {
       );
     }
 
-    role.assignTo.push({
-      user: teacherId,
-      assignDate: new Date(),
-    });
-
-    await role.save({ session });
+    // ✅ Update using $push (since lean can't save)
+    await Role.updateOne(
+      { _id: roleId },
+      {
+        $push: {
+          assignTo: {
+            user: teacherId,
+            assignDate: new Date(),
+          },
+        },
+      },
+      { session },
+    );
 
     await session.commitTransaction();
     session.endSession();
@@ -601,33 +817,153 @@ export const assignTaskToTeacher = async (req, res) => {
   }
 };
 
+// export const getTaskList = async (req, res) => {
+//   try {
+//     const baseQuery = req.body.query
+//       ? typeof req.body.query === "string"
+//         ? JSON.parse(req.body.query)
+//         : req.body.query
+//       : {};
+
+//     if (req.user.role === "Teacher") {
+//       baseQuery["assignTo.user"] = new mongoose.Types.ObjectId(req.user.id);
+//     } else {
+//       baseQuery["assignTo.user"] = new mongoose.Types.ObjectId(
+//         req.user.id,
+//       );
+//     }
+
+//     Object.assign(req.body, {
+//       select:
+//         "title description assignTo.status assignTo.user assignTo.assignDate updatedAt",
+//       sortBy: "updatedAt",
+//       sortOrder: "desc",
+//       populate: [
+//         {
+//           path: "assignTo.user",
+//           select: "name email role adminId",
+//         },
+//       ],
+//       query: baseQuery,
+//     });
+//     return crudService.getList(Task, CONSTANTS.BOOLEAN_TRUE)(req, res);
+//   } catch (error) {
+//     logMessage("Error in getTaskList controller", error, "error");
+//     return apiHTTPResponse(
+//       req,
+//       res,
+//       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+//       CONSTANTS_MSG.SERVER_ERROR,
+//       CONSTANTS.DATA_NULL,
+//       CONSTANTS.INTERNAL_SERVER_ERROR,
+//     );
+//   }
+// };
+
 export const getTaskList = async (req, res) => {
   try {
-    const baseQuery = req.body.query
-      ? typeof req.body.query === "string"
-        ? JSON.parse(req.body.query)
-        : req.body.query
-      : {};
+    const { page = 1, size = 10, query = {} } = req.body;
 
-    if (req.user.role === "Teacher") {
-      baseQuery["assignTo.user"] = new mongoose.Types.ObjectId(req.user.id);
-    }
-    Object.assign(req.body, {
-      select:
-        "title description assignTo.status assignTo.user assignTo.assignDate updatedAt",
-      sortBy: "updatedAt",
-      sortOrder: "desc",
-      populate: [
-        {
-          path: "assignTo.user",
-          select: "name email role",
+    const baseQuery = typeof query === "string" ? JSON.parse(query) : query;
+
+    const skip = (page - 1) * size;
+    const limit = Number(size);
+
+    const isTeacher = req.user.role === "Teacher";
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+
+    const pipeline = [
+      {
+        $match: baseQuery,
+      },
+
+      {
+        $unwind: "$assignTo",
+      },
+
+      {
+        $lookup: {
+          from: "users",
+          localField: "assignTo.user",
+          foreignField: "_id",
+          as: "assignTo.user",
         },
-      ],
-      query: baseQuery,
-    });
-    return crudService.getList(Task, CONSTANTS.BOOLEAN_TRUE)(req, res);
+      },
+      {
+        $unwind: {
+          path: "$assignTo.user",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      {
+        $match: isTeacher
+          ? {
+              "assignTo.user._id": userId,
+            }
+          : {
+              "assignTo.user.adminId": userId,
+            },
+      },
+
+      {
+        $sort: { updatedAt: -1 },
+      },
+
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $project: {
+                title: 1,
+                description: 1,
+                "assignTo.status": 1,
+                "assignTo.assignDate": 1,
+                "assignTo.user._id": 1,
+                "assignTo.user.name": 1,
+                "assignTo.user.email": 1,
+                "assignTo.user.role": 1,
+                updatedAt: 1,
+              },
+            },
+          ],
+          total: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+
+      {
+        $addFields: {
+          total: {
+            $ifNull: [{ $arrayElemAt: ["$total.count", 0] }, 0],
+          },
+        },
+      },
+    ];
+
+    const result = await Task.aggregate(pipeline);
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Task list fetched successfully",
+      {
+        list: result[0]?.data || [],
+        total: result[0]?.total || 0,
+        page,
+        size,
+      },
+      CONSTANTS.OK,
+    );
   } catch (error) {
     logMessage("Error in getTaskList controller", error, "error");
+
     return apiHTTPResponse(
       req,
       res,
