@@ -185,7 +185,11 @@ const admissionSchema = new Schema(
     isDeleted: {
       type: Boolean,
       default: false,
-    }
+    },
+    adminId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   { timestamps: true },
 );

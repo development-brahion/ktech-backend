@@ -159,7 +159,7 @@ export const createAdmission = async (req, res) => {
   session.startTransaction();
 
   try {
-    const inputData = { ...req.body, type: "New-Admission" };
+    const inputData = { ...req.body, type: "New-Admission",adminId: req.user.id };
 
     const installmentsData = inputData.installments || [];
     delete inputData.installments;
@@ -314,6 +314,7 @@ export const createAdmission = async (req, res) => {
       referralCode,
       role: "Student",
       amount: walletAmount,
+      adminId: req.user.id,
     };
 
     const createdUser = await User.create([userData], { session });
