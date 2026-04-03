@@ -1,4 +1,4 @@
-import { Goal, LeaveRequest, Role } from "../../models/index.js";
+import { Goal, LeaveRequest, Role, User } from "../../models/index.js";
 import { apiHTTPResponse, logMessage } from "../../utils/globalFunction.js";
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
@@ -15,11 +15,15 @@ export const getLeaveRequestList = async (req, res) => {
 
     if (["Student", "Teacher"].includes(req.user.role)) {
       baseQuery.name = req.user.id;
+    } else {
+      const allUsers = await User.distinct("_id", { adminId: req.user.id });
+      baseQuery.name = { $in: allUsers };
     }
+
     Object.assign(req.body, {
       select:
         "name applyDate startDate endDate leaveType leaveStatus reason remarks",
-      populate: "name:name,email,role|leaveType:name",
+      populate: "name:name,email,role,adminId|leaveType:name",
       sortBy: "applyDate",
       sortOrder: "desc",
       query: baseQuery,
