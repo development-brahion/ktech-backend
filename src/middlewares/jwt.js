@@ -24,6 +24,7 @@ const publicPathsForV1 = [
   `${API_END_POINT_V1}website/why-us`,
   `${API_END_POINT_V1}website/refund-policy`,
   `${API_END_POINT_V1}website/queries/submit`,
+  `${API_END_POINT_V1}website/blogs`,
 ];
 
 const publicPaths = [...publicPathsForV1, /^\/uploads(\/.*)?$/];
