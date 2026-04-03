@@ -173,3 +173,21 @@ export const allDocs = async (req, res) => {
     );
   }
 };
+
+export const publicBlogs = async (req, res) => {
+  try {
+    Object.assign(req.body, { status: CONSTANTS.BOOLEAN_TRUE });
+    return crudService.getList(Blog, CONSTANTS.BOOLEAN_TRUE)(req, res);
+  } catch (error) {
+    logMessage("Error in list blog", error, "error");
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+      CONSTANTS.ERROR_TRUE,
+    );
+  }
+};

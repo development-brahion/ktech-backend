@@ -40,4 +40,10 @@ router.delete(
   controllers.websiteController.blogs.softDelete,
 );
 
+router.get(
+  "/",
+  validationMiddleware("website", "blogs"),
+  controllers.websiteController.blogs.publicBlogs,
+);
+
 export default router;
