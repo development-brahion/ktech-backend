@@ -23,7 +23,7 @@ import routes from "./routes/index.js";
 
 const app = express();
 const { API_END_POINT_V1, SESSION_SECRET_KEY } = process.env;
-
+console.log("CWD:", process.cwd());
 app.use(corsMiddleware());
 app.use(express.json({ limit: "200mb" }));
 app.use(express.urlencoded({ extended: BOOLEAN_TRUE, limit: "200mb" }));
