@@ -67,7 +67,8 @@ export const updateLeaveRequest = async (req, res) => {
 
 export const roleExamRequestList = async (req, res) => {
   try {
-    const { roleId, page, size } = req.body;
+    const { roleId, page, size, status = "" } = req.body;
+    const adminId = req.user.id;
 
     const pipeline = [
       {
@@ -96,6 +97,22 @@ export const roleExamRequestList = async (req, res) => {
           preserveNullAndEmptyArrays: true,
         },
       },
+      ...(status?.trim()
+        ? [
+            {
+              $match: {
+                "assignTo.status": status,
+                "assignTo.user.adminId": new mongoose.Types.ObjectId(adminId),
+              },
+            },
+          ]
+        : [
+            {
+              $match: {
+                "assignTo.user.adminId": new mongoose.Types.ObjectId(adminId),
+              },
+            },
+          ]),
       {
         $project: {
           _id: 1,
@@ -160,7 +177,8 @@ export const roleExamRequestList = async (req, res) => {
 
 export const goalExamRequestList = async (req, res) => {
   try {
-    const { goalId, page, size } = req.body;
+    const { goalId, page, size, status = "" } = req.body;
+    const adminId = req.user.id;
 
     const pipeline = [
       {
@@ -189,6 +207,22 @@ export const goalExamRequestList = async (req, res) => {
           preserveNullAndEmptyArrays: true,
         },
       },
+      ...(status?.trim()
+        ? [
+            {
+              $match: {
+                "assignTo.status": status,
+                "assignTo.user.adminId": new mongoose.Types.ObjectId(adminId),
+              },
+            },
+          ]
+        : [
+            {
+              $match: {
+                "assignTo.user.adminId": new mongoose.Types.ObjectId(adminId),
+              },
+            },
+          ]),
       {
         $project: {
           _id: 1,

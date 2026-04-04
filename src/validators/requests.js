@@ -1,5 +1,6 @@
 import {
   objectIdValidation,
+  optionalEnum,
   optionalString,
   requiredEnum,
   requiredNumber,
@@ -26,6 +27,7 @@ const joiValidation = {
       roleId: objectIdValidation("role id"),
       page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
       size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      status: optionalEnum(["Pending", "Approved", "Rejected"]),
     },
     "/update-status": {
       _id: objectIdValidation("id"),
@@ -45,6 +47,7 @@ const joiValidation = {
       goalId: objectIdValidation("goal id"),
       page: requiredNumber(1, Number.MAX_SAFE_INTEGER),
       size: requiredNumber(1, Number.MAX_SAFE_INTEGER),
+      status: optionalEnum(["Pending", "Approved", "Rejected"]),
     },
     "/update-status": {
       _id: objectIdValidation("id"),

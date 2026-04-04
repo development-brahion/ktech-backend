@@ -269,47 +269,67 @@ export const updateTeacherPassword = async (req, res) => {
 
 export const updateReferralAmountPanel = async (req, res) => {
   try {
-    const inputData = req.body;
+    const { amount } = req.body;
 
-    if (!inputData || Object.keys(inputData).length === 0) {
+    if (typeof amount === "undefined") {
       return apiHTTPResponse(
         req,
         res,
         CONSTANTS.HTTP_BAD_REQUEST,
-        "No data provided to update home panel",
+        "Amount is required",
         CONSTANTS.DATA_NULL,
         CONSTANTS.BAD_REQUEST,
         CONSTANTS.ERROR_TRUE,
       );
     }
 
-    const { statusCode } = await updateAndCreateDocumentByQueryAndData(
-      ReferralAmount,
-      {},
-      inputData,
-    );
+    let doc = await ReferralAmount.findOne({});
 
-    if (statusCode === CONSTANTS.OK) {
+    if (!doc) {
+      await ReferralAmount.create({ amount });
+
       return apiHTTPResponse(
         req,
         res,
         CONSTANTS.HTTP_OK,
-        CONSTANTS_MSG.SUCCESS_MSG,
+        "Created successfully",
         CONSTANTS.DATA_NULL,
         CONSTANTS.OK,
       );
-    } else {
+    }
+
+    if (doc.amount === amount) {
       return apiHTTPResponse(
         req,
         res,
-        CONSTANTS.HTTP_BAD_REQUEST,
-        CONSTANTS_MSG.FAILED_MSG,
+        CONSTANTS.HTTP_OK,
+        "No changes detected",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.BAD_REQUEST,
+        CONSTANTS.OK,
       );
     }
+
+    doc.history.push({
+      oldAmount: doc.amount,
+      newAmount: amount,
+      updatedAt: new Date(),
+    });
+
+    doc.amount = amount;
+
+    await doc.save();
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Updated successfully",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.OK,
+    );
   } catch (error) {
     logMessage("Error in updateReferralAmountPanel controller", error, "error");
+
     return apiHTTPResponse(
       req,
       res,
@@ -556,11 +576,9 @@ export const assignGoalToTeacher = async (req, res) => {
     const { teacherId, goalId } = req.body;
 
     // ✅ Check teacher (lean)
-    const teacher = await User.findOne(
-      { _id: teacherId },
-      null,
-      { session }
-    ).lean();
+    const teacher = await User.findOne({ _id: teacherId }, null, {
+      session,
+    }).lean();
 
     if (!teacher) {
       await session.abortTransaction();
@@ -572,16 +590,12 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         "Teacher not found",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND
+        CONSTANTS.NOT_FOUND,
       );
     }
 
     // ✅ Get goal (lean to avoid crash)
-    const goal = await Goal.findOne(
-      { _id: goalId },
-      null,
-      { session }
-    ).lean();
+    const goal = await Goal.findOne({ _id: goalId }, null, { session }).lean();
 
     if (!goal) {
       await session.abortTransaction();
@@ -593,13 +607,13 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_NOT_FOUND,
         "Goal not found",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.NOT_FOUND
+        CONSTANTS.NOT_FOUND,
       );
     }
 
     // ✅ Check already assigned
     const alreadyExist = goal.assignTo?.find(
-      (item) => String(item.user) === String(teacherId)
+      (item) => String(item.user) === String(teacherId),
     );
 
     if (alreadyExist) {
@@ -612,7 +626,7 @@ export const assignGoalToTeacher = async (req, res) => {
         CONSTANTS.HTTP_BAD_REQUEST,
         "Goal already assigned to teacher",
         CONSTANTS.DATA_NULL,
-        CONSTANTS.BAD_REQUEST
+        CONSTANTS.BAD_REQUEST,
       );
     }
 
@@ -630,7 +644,7 @@ export const assignGoalToTeacher = async (req, res) => {
           },
         },
       },
-      { session }
+      { session },
     );
 
     await session.commitTransaction();
@@ -642,7 +656,7 @@ export const assignGoalToTeacher = async (req, res) => {
       CONSTANTS.HTTP_OK,
       "Goal assigned to teacher successfully",
       CONSTANTS.DATA_NULL,
-      CONSTANTS.OK
+      CONSTANTS.OK,
     );
   } catch (error) {
     await session.abortTransaction();
@@ -656,7 +670,7 @@ export const assignGoalToTeacher = async (req, res) => {
       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
       CONSTANTS_MSG.SERVER_ERROR,
       CONSTANTS.DATA_NULL,
-      CONSTANTS.INTERNAL_SERVER_ERROR
+      CONSTANTS.INTERNAL_SERVER_ERROR,
     );
   }
 };

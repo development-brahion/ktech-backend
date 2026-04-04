@@ -8,8 +8,19 @@ const referralAmountSchema = new Schema(
       type: Number,
       default: 0,
     },
+
+    history: [
+      {
+        oldAmount: Number,
+        newAmount: Number,
+        updatedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ReferralAmount = mongoose.model("ReferralAmount", referralAmountSchema);
