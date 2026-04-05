@@ -433,6 +433,16 @@ export const attendanceListByRole = async (req, res) => {
       match.user = new mongoose.Types.ObjectId(id);
     }
 
+    const userMatch = {};
+
+    if (type) {
+      userMatch.role = type;
+    }
+
+    if (["Superadmin", "Admin"].includes(role)) {
+      userMatch.adminId = new mongoose.Types.ObjectId(id);
+    }
+
     const pipeline = [
       { $match: match },
 
@@ -444,7 +454,7 @@ export const attendanceListByRole = async (req, res) => {
           foreignField: "_id",
           as: "user",
           pipeline: [
-            ...(type ? [{ $match: { role: type } }] : []),
+            ...(Object.keys(userMatch).length ? [{ $match: userMatch }] : []),
             {
               $project: {
                 _id: 1,
