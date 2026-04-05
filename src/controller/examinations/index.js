@@ -172,7 +172,11 @@ export const getExaminationResultList = async (req, res) => {
 
     if (["Teacher", "Student"].includes(req.user.role)) {
       baseQuery.userId = req.user.id;
+    } else {
+      const allUsers = await User.distinct("_id", { adminId: req.user.id });
+      baseQuery.userId = { $in: allUsers };
     }
+
     Object.assign(req.body, {
       select: "userId examination result marks type createdAt",
       populate: "userId:name,email,role|examination:examtitle",
@@ -249,6 +253,7 @@ export const addHallTicket = async (req, res) => {
           user_id,
           examination_id,
           admission_id,
+          adminId: req.user.id,
         },
       ],
       { session },
