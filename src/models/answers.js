@@ -44,7 +44,7 @@ const answerSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Answer = mongoose.model("Answer", answerSchema);

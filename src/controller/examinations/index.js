@@ -95,6 +95,7 @@ export const getExaminationDetails = async (req, res) => {
 
 export const createExamination = async (req, res) => {
   try {
+    Object.assign(req.body, { adminId: req.user.id });
     return crudService.create(
       Examination,
       "Examination created successfully",
@@ -845,7 +846,11 @@ export const getStudentExamsList = async (req, res) => {
       },
     ];
 
-    return crudService.executeAggregation(Examination, pipeline,true)(req, res);
+    return crudService.executeAggregation(
+      Examination,
+      pipeline,
+      true,
+    )(req, res);
   } catch (error) {
     logMessage("Error in get student exams list", error, "error");
     return apiHTTPResponse(
