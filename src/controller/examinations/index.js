@@ -179,7 +179,7 @@ export const getExaminationResultList = async (req, res) => {
 
     Object.assign(req.body, {
       select: "userId examination result marks type createdAt",
-      populate: "userId:name,email,role|examination:examtitle",
+      populate: "userId:name,email,role|examination:examtitle,passingPercentage",
       query: baseQuery,
     });
 
@@ -222,7 +222,7 @@ export const getExaminationResultDetails = async (req, res) => {
 export const getHallTicketList = async (req, res) => {
   try {
     Object.assign(req.body, {
-      select: "_id user_id examination_id admission_id createdAt",
+      select: "_id user_id examination_id admission_id createdAt adminId",
       populate:
         "user_id:name,email,rollNo|examination_id:examtitle,examduration|admission_id:fatherName,motherName,course,batch|admission_id.course:courseName|admission_id.batch:startTime,endTime",
     });
