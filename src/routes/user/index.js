@@ -40,4 +40,10 @@ router.get(
   controllers.userController.allUsers,
 );
 
+router.get(
+  "/admin-dashboard",
+  validationMiddleware("", ""),
+  controllers.userController.getDashBoardData,
+);
+
 export default router;

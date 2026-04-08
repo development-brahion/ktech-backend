@@ -7,12 +7,13 @@ import {
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import crudService from "../../services/crudService.js";
-import { User } from "../../models/index.js";
+import { Admission, Inquiry, User } from "../../models/index.js";
 import {
   findOneByQueryLean,
   updateDocumentByQueryAndData,
 } from "../../services/serviceGlobal.js";
 import { nameStatusController } from "../common.js";
+import mongoose from "mongoose";
 
 export const getUserList = async (req, res) => {
   try {
@@ -229,3 +230,161 @@ export const updateUser = async (req, res) => {
 
 export const { enableDisable: enableDisableUser, allDocs: allUsers } =
   nameStatusController(User, {}, "User");
+
+export const getDashBoardData = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const matchStage = {
+      adminId: new mongoose.Types.ObjectId(id),
+      isDeleted: false,
+    };
+
+    const today = new Date();
+
+    const countsPromise = Promise.all([
+      User.countDocuments({ ...matchStage, role: "Student" }),
+      User.countDocuments({ ...matchStage, role: "Teacher" }),
+      Admission.countDocuments(matchStage),
+      Inquiry.countDocuments(matchStage),
+    ]);
+
+    const todayBirthdayPromise = User.aggregate([
+      {
+        $match: {
+          ...matchStage,
+          role: { $in: ["Student", "Teacher"] },
+          dateOfBirth: { $ne: null },
+        },
+      },
+      {
+        $addFields: {
+          birthDay: { $dayOfMonth: "$dateOfBirth" },
+          birthMonth: { $month: "$dateOfBirth" },
+        },
+      },
+      {
+        $match: {
+          birthDay: today.getDate(),
+          birthMonth: today.getMonth() + 1,
+        },
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          phoneNo: 1,
+          role: 1,
+          dateOfBirth: 1,
+          profilephoto: { $arrayElemAt: ["$profilephoto", 0] },
+        },
+      },
+    ]);
+
+    const upcomingBirthdayPromise = User.aggregate([
+      {
+        $match: {
+          ...matchStage,
+          role: { $in: ["Student", "Teacher"] },
+          dateOfBirth: { $ne: null },
+        },
+      },
+      {
+        $addFields: {
+          nextBirthday: {
+            $dateFromParts: {
+              year: { $year: new Date() },
+              month: { $month: "$dateOfBirth" },
+              day: { $dayOfMonth: "$dateOfBirth" },
+            },
+          },
+        },
+      },
+      {
+        $addFields: {
+          nextBirthday: {
+            $cond: [
+              { $lt: ["$nextBirthday", new Date()] },
+              {
+                $dateFromParts: {
+                  year: { $add: [{ $year: new Date() }, 1] },
+                  month: { $month: "$dateOfBirth" },
+                  day: { $dayOfMonth: "$dateOfBirth" },
+                },
+              },
+              "$nextBirthday",
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          diffDays: {
+            $divide: [
+              { $subtract: ["$nextBirthday", new Date()] },
+              1000 * 60 * 60 * 24,
+            ],
+          },
+        },
+      },
+      {
+        $match: {
+          diffDays: { $gte: 1, $lte: 7 },
+        },
+      },
+      {
+        $sort: { diffDays: 1 },
+      },
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          phoneNo: 1,
+          role: 1,
+          dateOfBirth: 1,
+          nextBirthday: 1,
+          profilephoto: { $arrayElemAt: ["$profilephoto", 0] },
+        },
+      },
+    ]);
+
+    const [
+      [studentCount, teacherCount, admissionsCount, inquiriesCount],
+      todayBirthdays,
+      upcomingBirthdays,
+    ] = await Promise.all([
+      countsPromise,
+      todayBirthdayPromise,
+      upcomingBirthdayPromise,
+    ]);
+
+    const data = {
+      studentCount,
+      teacherCount,
+      admissionsCount,
+      inquiriesCount,
+      todayBirthdays,
+      upcomingBirthdays,
+      lastRefreshedAt: new Date(),
+    };
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_OK,
+      "Dashboard data fetched successfully",
+      data,
+    );
+  } catch (error) {
+    logMessage("Error in get dashboard data", error, "error");
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
