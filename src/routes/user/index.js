@@ -46,4 +46,10 @@ router.get(
   controllers.userController.getDashBoardData,
 );
 
+router.get(
+  "/my-dashboard",
+  validationMiddleware("", ""),
+  controllers.userController.getMyDashboard,
+);
+
 export default router;

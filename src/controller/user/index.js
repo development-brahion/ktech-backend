@@ -7,7 +7,14 @@ import {
 import * as CONSTANTS from "../../utils/constants.js";
 import * as CONSTANTS_MSG from "../../utils/constantsMessage.js";
 import crudService from "../../services/crudService.js";
-import { Admission, Inquiry, User } from "../../models/index.js";
+import {
+  Admission,
+  Attendance,
+  Inquiry,
+  LeaveRequest,
+  Task,
+  User,
+} from "../../models/index.js";
 import {
   findOneByQueryLean,
   updateDocumentByQueryAndData,
@@ -383,6 +390,202 @@ export const getDashBoardData = async (req, res) => {
       res,
       CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
       CONSTANTS_MSG.SERVER_ERROR,
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.INTERNAL_SERVER_ERROR,
+    );
+  }
+};
+
+export const getMyDashboard = async (req, res) => {
+  try {
+    const { id, role } = req.user;
+    const userId = new mongoose.Types.ObjectId(id);
+    const today = new Date();
+
+    const attendanceStatsPromise = Attendance.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const leaveStatsPromise = LeaveRequest.aggregate([
+      { $match: { name: userId } },
+      {
+        $group: {
+          _id: "$leaveStatus",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const taskStatsPromise = Task.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+          "assignTo.user": userId,
+        },
+      },
+      {
+        $unwind: "$assignTo",
+      },
+      {
+        $match: {
+          "assignTo.user": userId,
+        },
+      },
+      {
+        $group: {
+          _id: "$assignTo.status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    if (role === "Student") {
+      const [attendanceStats, leaveStats, studentData, totalAdmissions] =
+        await Promise.all([
+          attendanceStatsPromise,
+          leaveStatsPromise,
+
+          Admission.findOne({
+            user: userId,
+            dateOfBirth: { $ne: null },
+          }).lean(),
+
+          Admission.countDocuments({
+            user: userId,
+            isDeleted: false,
+          }),
+        ]);
+
+      let isBirthday = false;
+      if (studentData?.dateOfBirth) {
+        const dob = new Date(studentData.dateOfBirth);
+        isBirthday =
+          dob.getDate() === today.getDate() &&
+          dob.getMonth() === today.getMonth();
+      }
+
+      const attendance = {
+        Present: attendanceStats.find((a) => a._id === "Present")?.count || 0,
+        Absent: attendanceStats.find((a) => a._id === "Absent")?.count || 0,
+        Leave: attendanceStats.find((a) => a._id === "Leave")?.count || 0,
+      };
+
+      const total = attendance.Present + attendance.Absent + attendance.Leave;
+
+      attendance.percentage = total
+        ? ((attendance.Present / total) * 100).toFixed(2)
+        : 0;
+
+      const leave = {
+        Pending: leaveStats.find((l) => l._id === "Pending")?.count || 0,
+        Approved: leaveStats.find((l) => l._id === "Approved")?.count || 0,
+        Rejected: leaveStats.find((l) => l._id === "Rejected")?.count || 0,
+      };
+
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_OK,
+        "Student dashboard",
+        {
+          role,
+          isBirthday,
+          birthdayMessage: isBirthday
+            ? `🎉 Happy Birthday ${studentData?.name || ""}!`
+            : null,
+          attendance,
+          leave,
+          totalAdmissions,
+          lastRefreshedAt: new Date(),
+        },
+        CONSTANTS.OK,
+      );
+    }
+
+    if (role === "Teacher") {
+      const [attendanceStats, leaveStats, teacherData, taskStats] =
+        await Promise.all([
+          attendanceStatsPromise,
+          leaveStatsPromise,
+          User.findById(userId).lean(),
+          taskStatsPromise,
+        ]);
+
+      let isBirthday = false;
+      if (teacherData?.dateOfBirth) {
+        const dob = new Date(teacherData.dateOfBirth);
+        isBirthday =
+          dob.getDate() === today.getDate() &&
+          dob.getMonth() === today.getMonth();
+      }
+
+      const attendance = {
+        Present: attendanceStats.find((a) => a._id === "Present")?.count || 0,
+        Absent: attendanceStats.find((a) => a._id === "Absent")?.count || 0,
+        Leave: attendanceStats.find((a) => a._id === "Leave")?.count || 0,
+      };
+
+      const total = attendance.Present + attendance.Absent + attendance.Leave;
+
+      attendance.percentage = total
+        ? ((attendance.Present / total) * 100).toFixed(2)
+        : 0;
+
+      const leave = {
+        Pending: leaveStats.find((l) => l._id === "Pending")?.count || 0,
+        Approved: leaveStats.find((l) => l._id === "Approved")?.count || 0,
+        Rejected: leaveStats.find((l) => l._id === "Rejected")?.count || 0,
+      };
+
+      const tasks = {
+        Pending: taskStats.find((t) => t._id === "Pending")?.count || 0,
+        "In-Progress":
+          taskStats.find((t) => t._id === "In-Progress")?.count || 0,
+        Completed: taskStats.find((t) => t._id === "Completed")?.count || 0,
+      };
+
+      return apiHTTPResponse(
+        req,
+        res,
+        CONSTANTS.HTTP_OK,
+        "Teacher dashboard",
+        {
+          role,
+          isBirthday,
+          birthdayMessage: isBirthday
+            ? `🎉 Happy Birthday ${teacherData?.name || ""}!`
+            : null,
+          attendance,
+          leave,
+          tasks,
+          lastRefreshedAt: new Date(),
+        },
+        CONSTANTS.OK,
+      );
+    }
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_BAD_REQUEST,
+      "Invalid role",
+      CONSTANTS.DATA_NULL,
+      CONSTANTS.BAD_REQUEST,
+    );
+  } catch (error) {
+    logMessage("Error in getMyDashboard", error, "error");
+
+    return apiHTTPResponse(
+      req,
+      res,
+      CONSTANTS.HTTP_INTERNAL_SERVER_ERROR,
+      "Internal Server Error",
       CONSTANTS.DATA_NULL,
       CONSTANTS.INTERNAL_SERVER_ERROR,
     );
