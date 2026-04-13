@@ -46,6 +46,10 @@ export const signIn = async (req, res) => {
         id: data._id,
       };
 
+      if (["Student", "Teacher"].includes(data.role)) {
+        payloadData.adminId = data.adminId;
+      }
+
       const token = signToken(payloadData);
 
       return apiHTTPResponse(

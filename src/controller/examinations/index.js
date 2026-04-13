@@ -179,7 +179,8 @@ export const getExaminationResultList = async (req, res) => {
 
     Object.assign(req.body, {
       select: "userId examination result marks type createdAt",
-      populate: "userId:name,email,role|examination:examtitle,passingPercentage",
+      populate:
+        "userId:name,email,role|examination:examtitle,passingPercentage",
       query: baseQuery,
     });
 
@@ -330,7 +331,7 @@ export const getAllExaminations = async (req, res) => {
 
 export const getRoleExaminationsForTeacher = async (req, res) => {
   try {
-    const { id } = req.user;
+    const { id, adminId } = req.user;
     const { roleId } = req.params;
 
     const roleData = await Role.findOne({
@@ -362,6 +363,7 @@ export const getRoleExaminationsForTeacher = async (req, res) => {
           type: "Role",
           isDeleted: false,
           isDraft: false,
+          adminId: new mongoose.Types.ObjectId(adminId),
         },
       },
       {
@@ -421,7 +423,7 @@ export const getRoleExaminationsForTeacher = async (req, res) => {
 
 export const getGoalExaminationsForTeacher = async (req, res) => {
   try {
-    const { id } = req.user;
+    const { id, adminId } = req.user;
     const { goalId } = req.params;
 
     const goalData = await Goal.findOne({
@@ -453,6 +455,7 @@ export const getGoalExaminationsForTeacher = async (req, res) => {
           type: "Goal",
           isDeleted: false,
           isDraft: false,
+          adminId: new mongoose.Types.ObjectId(adminId),
         },
       },
       {
